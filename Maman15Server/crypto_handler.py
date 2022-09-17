@@ -30,7 +30,6 @@ class CryptoHandler:
 
     def encrypt_data(self, plain_data, encryption_key):
         plain_data = pad(plain_data)
-        print("After padding:", plain_data)
         iv = self.__get_iv_for_encryption()
         cipher = AES.new(encryption_key, AES.MODE_CBC, iv)
         return base64.b64encode(iv + cipher.encrypt(plain_data))

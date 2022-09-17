@@ -1,9 +1,9 @@
-import logging
-import sqlite3
-import threading
+import logging, sqlite3, threading, uuid 
+from utils import SERVER_DB_FILE_NAME
 
-SERVER_DB_FILE_NAME = "server.db"
-
+"""
+    Singleton class used for handling all DB operations (create, insert, update)
+"""
 class ServerDatabase:
     __instance = None
     @staticmethod 
@@ -23,12 +23,17 @@ class ServerDatabase:
             self.db_write_lock = threading.Lock()
             ServerDatabase.__instance = self
             self.__initialize_tables()
+            sqlite3.register_adapter(uuid.UUID, lambda u: u.bytes_le)
         
+    """
+        Initializes the needed table for the server operation (clients and file table)
+    """
     def __initialize_tables(self):
         logging.info("Creating the clients' table")
+        self.db_write_lock.acquire()
         self.__cursor.execute(
             """CREATE TABLE clients (
-            id integer primary key autoincrement, 
+            id varchar(127) primary key, 
             name varchar(127), 
             public_key varchar(160),
             last_seen datetime,
@@ -41,66 +46,96 @@ class ServerDatabase:
             id integer primary key autoincrement, 
             file_name varchar(255), 
             path_name varchar(255),
+            FOREIGN KEY(client_id) REFERENCES clients(id)
             verified boolean)
             """)
-    
-    
-    def __validate_db_input(data_to_validate):
-        ''' todo '''
-        pass
+        self.db_write_lock.release()
 
+    """
+        Updated last seen 
+
+    """
+    def __update_last_seen(self, client_id):
+        self.__cursor.execute(
+            """UPDATE clients set 
+            last_seen = DATETIME() 
+            WHERE id = ?
+            """, [client_id])
+        self.db_write_lock.release()
+        logging.info("Set client's last seen field (uuid={0}) ".format(client_id))
+
+    """
+        Registers a new client into the DB (clients table). Adds only the name.
+        Also updates last seen field for appropriate client
+    """
     def register_new_client(self, client_name):
-        logging.info("Validating client name before inputting")
-        if self.__validate_db_input(client_name) == False:
-            return -1
         try:
+            self.db_write_lock.acquire()
             self.__cursor.execute(
                 """INSERT INTO clients (
-                name, last_seen)
-                VALUES({0},DATETIME())
-                """.format(client_name))
+                id, name)
+                VALUES(?, ?)
+                """, [uuid.uuid4(), client_name])
             client_uuid = self.__cursor.lastrowid
         except:
             logging.error("Failed registering client {0}".format(client_name))
             return -1
 
         logging.info("Added client {0} to databse with uuid {1}".format(client_name, client_uuid))
+        self.__update_last_seen(client_uuid)
+        self.db_write_lock.release()
         return client_uuid
 
+    """
+        Adds the client public key and the client server shared aes key to the appropriate entry in the clients table.
+        Also updates last seen field for appropriate client
+    """
     def add_client_key_to_db(self, client_id, client_public_key, client_server_shared_key):
-        logging.info("Validating client public key before inputting")
-        self.__validate_db_input(client_public_key)
+        self.db_write_lock.acquire()
         self.__cursor.execute(
             """UPDATE clients set 
-            public_key = {0}, shared_key = {1}, last_seen = DATETIME() 
-            WHERE id = {2}
-            """.format(client_public_key, client_server_shared_key, client_id))
+            public_key = ?, shared_key = ?
+            WHERE id = ?
+            """, [client_public_key, client_server_shared_key, client_id])
+        self.__update_last_seen(client_id)
+        self.db_write_lock.release()
         logging.info("Added client's with uuid {0} keys to the databse".format(client_id))
 
+    """
+        Registers a new file into the DB (files table). Adds only the name, path, and client id
+        Also updates last seen field for appropriate client
+    """
     def register_new_file(self, encrypted_file_name, encrypted_file_path, client_id):
-        logging.info("Validating file name and path before inputting")
-        if self.__validate_db_input(encrypted_file_name) == False or self.__validate_db_input(encrypted_file_path) == False:
-            return -1
         try:
+            self.db_write_lock.acquire()
             self.__cursor.execute(
                 """INSERT INTO file (
-                file_name, file_path, verified)
-                VALUES({0}, {1}, FALSE)
-                """.format(encrypted_file_name, encrypted_file_path))
+                file_name, file_path, client_id, verified)
+                VALUES(?, ?, ?, FALSE)
+                """, [encrypted_file_name, encrypted_file_path, client_id])
             file_uuid = self.__cursor.lastrowid
         except:
             logging.error("Failed registering file {0}".format(file_uuid))
             return -1
-            
+        
+        self.__update_last_seen(client_id)
+        self.db_write_lock.release()
         logging.info("Added file {0} to databse with uuid {1}".format(encrypted_file_name, file_uuid))
         return file_uuid
 
-    def set_file_verified(self, file_id):
+    """
+        Sets the verified flag on the appropriate file.
+        Also updates last seen field for appropriate client
+    """
+    def set_file_verified(self, file_id, client_id):
+        self.db_write_lock.acquire()
         self.__cursor.execute(
-            """UPDATE clients set 
+            """UPDATE files set 
             verified = TRUE
-            WHERE id = {2}
-            """.format(file_id))
+            WHERE id = ?
+            """, [file_id])
+        self.__update_last_seen(client_id)
+        self.db_write_lock.release()
         logging.info("Set file verified with uuid {0}".format(file_id))
 
     

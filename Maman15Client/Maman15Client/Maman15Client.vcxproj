@@ -108,12 +108,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\boost_1_79_0;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\cryptopp870;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870\x64\Output\Release\cryptlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\boost_1_79_0\libs</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -135,6 +136,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ClientInitializer.cpp" />
+    <ClCompile Include="ClientSocketHandler.cpp" />
+    <ClCompile Include="FileUtils.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="RegistrationHandler.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ClientInitializer.h" />
+    <ClInclude Include="ClientSocketHandler.h" />
+    <ClInclude Include="CryptoUtils.h" />
+    <ClInclude Include="FileUtils.h" />
+    <ClInclude Include="RegistrationHandler.h" />
+    <ClInclude Include="ProtocolCodes.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

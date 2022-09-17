@@ -2,6 +2,7 @@ import threading, logging
 from crypto_handler import CryptoHandler
 from database import ServerDatabase
 from file_handler import FileHandler
+import consts
 from utils import *
 
 class ClientHandler(threading.Thread):
@@ -46,7 +47,7 @@ class ClientHandler(threading.Thread):
             self.__client_socket.close()
 
     def __register_client(self):
-        request_code = self.__client_socket.receive(CODE_FIELD_LENGTH)
+        request_code = self.__client_socket.receive(consts.CODE_FIELD_LENGTH)
         if request_code != ClientRequest.CLIENT_REGISTRATION:
             logging.error("Expected registration, got {0} instead".format(request_code))
             return False
@@ -54,7 +55,7 @@ class ClientHandler(threading.Thread):
         logging.info("Registering new client.")
         
         name_length = self.__client_socket.receive(1)
-        if name_length > MAX_CLIENT_NAME_LENGTH:
+        if name_length > consts.MAX_CLIENT_NAME_LENGTH:
             logging.error("Name length longer than allowed.")
             return False 
         
@@ -71,28 +72,28 @@ class ClientHandler(threading.Thread):
         self.__client_id = client_id
 
     def __send_aes_key_to_client(self):
-        request_code = self.__client_socket.receive(CODE_FIELD_LENGTH)
+        request_code = self.__client_socket.receive(consts.CODE_FIELD_LENGTH)
         if request_code != ClientRequest.CLIENT_PUBLIC_KEY:
             logging.error("Expected client public key, got {0} instead".format(request_code))
             return False
 
         logging.info("Sending client {0} shared AES key".format(self.__client_name))
 
-        self.__client_public_key = self.__client_socket.receive(CLIENT_PUBLIC_KEY_LENGTH)
+        self.__client_public_key = self.__client_socket.receive(consts.CLIENT_PUBLIC_KEY_LENGTH)
         self.__database.add_client_key_to_db(self.__client_id, self.__client_public_key, self.__client_server_shared_key)
         encrypted_shared_key = self.__crypto_handler.encrypt_data(self.__client_server_shared_key, self.__client_public_key)
         self.__client_socket.send(ServerResponse.CLIENT_AES_KEY)
         self.__client_socket.send(encrypted_shared_key)
 
     def __receive_encrypted_file(self):
-        request_code = self.__client_socket.receive(CODE_FIELD_LENGTH)
+        request_code = self.__client_socket.receive(consts.CODE_FIELD_LENGTH)
         if request_code != ClientRequest.CLIENT_ENCRYPTED_FILE:
             logging.error("Expected client public key, got {0} instead".format(request_code))
             raise
 
         logging.info("Receiving from client {0} encrypted file".format(self.__client_name))
         encrypted_file_path_size = self.__client_socket.receive(1)
-        if encrypted_file_path_size > MAX_FILE_PATH_LENGTH:
+        if encrypted_file_path_size > consts.MAX_FILE_PATH_LENGTH:
             logging.error("File path length longer than allowed.")
             raise
 
@@ -101,8 +102,10 @@ class ClientHandler(threading.Thread):
         logging.info("Received file with path {0} and name {1}".format(encrypted_file_path, encrypted_file_name))
 
         file_id = self.__database.register_new_file(encrypted_file_name, encrypted_file_path, self.__client_id)
+        if file_id == -1:
+            raise
 
-        encrypted_file_size = self.__client_socket.receive(FILE_LENGTH_FIELD_LENGTH)
+        encrypted_file_size = self.__client_socket.receive(consts.FILE_LENGTH_FIELD_LENGTH)
         encrypted_file_data = self.__client_socket.receive(encrypted_file_size)
         decrypted_file_data = self.__crypto_handler.decrypt_data(self.__client_server_shared_key, encrypted_file_data)
         return self.__handle_file_from_client(decrypted_file_data, encrypted_file_name, encrypted_file_path, file_id)
@@ -114,7 +117,7 @@ class ClientHandler(threading.Thread):
         self.__client_socket.send(file_CRC)
 
         logging.info("Waiting for client CRC confirmation for file {0}".format(file_name))
-        request_code = self.__client_socket.receive(CODE_FIELD_LENGTH)
+        request_code = self.__client_socket.receive(consts.CODE_FIELD_LENGTH)
         if request_code == ClientRequest.FILE_CRC_FAILED:
             logging.warn("Failed CRC verification with client for file {0}, restarting file receive process".format(file_name))
             return False
@@ -123,7 +126,7 @@ class ClientHandler(threading.Thread):
             if self.__file_handler.save_file(file_data, file_name, file_path) == False:
                 return False
             logging.info("Setting file verified in db for file {0}".format(file_name))
-            self.__database.set_file_verified(file_id)
+            self.__database.set_file_verified(file_id, self.__client_id)
             return True
         else:
             logging.error("Expected file crc result, got {0} instead".format(request_code))
