@@ -10,5 +10,5 @@ private:
 
 public:
 	RegistrationHandler(ClientSocketHandler* clientSocketHandler);
-	bool registerClient(string clientUserName);
+	string registerClient(string clientUserName);
 };

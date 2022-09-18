@@ -4,7 +4,7 @@ RegistrationHandler::RegistrationHandler(ClientSocketHandler* clientSocketHandle
 
 bool RegistrationHandler::registerClient(string clientUserName)
 {
-    ClientRequest request;
+    uint8_t* registrationPacket = new uint8_t[];
 
     request->_payload.size = clientUserName.size();
 	uint32_t clientNameLength = (PACKET_SIZE - request->sizeWithoutPayload());
@@ -16,9 +16,28 @@ bool RegistrationHandler::registerClient(string clientUserName)
 
 	if (!_clientSocketHandler.send(buffer))
     {
-        cout << "ERROR: Request sending on socket failed!" << endl;
-		delete request;
+        cout << "ERROR: RegistrationHandler - Request sending on socket failed!" << endl;
+		delete request->_payload.payload;
+        request->_payload.payload = NULL;
+        delete request;
 		request = NULL;
 		return false;
     }
+
+    uint8_t buffer[PACKET_SIZE];
+    ServerResponse* serverResponse = NULL;
+
+    if (!_clientSocketHandler.receive(buffer))
+    {
+        err << "ERROR: RegistrationHandler - Failed to receive first message from server!" << endl;
+        return false;
+    }
+
+    serverResponse = new ServerResponse(buffer, PACKET_SIZE);
+    
+    if (serverResponse->)
+
+    delete serverResponse;
+
+    return true;
 }
