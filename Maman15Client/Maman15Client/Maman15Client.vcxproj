@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -136,19 +136,34 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AESWrapper.cpp" />
+    <ClCompile Include="Base64Wrapper.cpp" />
     <ClCompile Include="ClientInitializer.cpp" />
     <ClCompile Include="ClientSocketHandler.cpp" />
+    <ClCompile Include="CommonPayload.cpp" />
+    <ClCompile Include="EncryptionHandler.cpp" />
+    <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="FileUtils.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RegistrationHandler.cpp" />
+    <ClCompile Include="RSAWrapper.cpp" />
+    <ClCompile Include="ClientRequest.cpp" />
+    <ClCompile Include="ServerResponse.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AESWrapper.h" />
+    <ClInclude Include="Base64Wrapper.h" />
     <ClInclude Include="ClientInitializer.h" />
     <ClInclude Include="ClientSocketHandler.h" />
+    <ClInclude Include="CommonPayload.h" />
     <ClInclude Include="CryptoUtils.h" />
+    <ClInclude Include="EncryptionHandler.h" />
+    <ClInclude Include="FileHandler.h" />
     <ClInclude Include="FileUtils.h" />
     <ClInclude Include="RegistrationHandler.h" />
-    <ClInclude Include="ProtocolCodes.h" />
+    <ClInclude Include="RSAWrapper.h" />
+    <ClInclude Include="ClientRequest.h" />
+    <ClInclude Include="ServerResponse.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,6 +1,6 @@
 #include <boost/asio.hpp>
 #include "ClientInitializer.h"
-#include "CryptoUtils.h"
+#include "EncryptionHandler.h"
 
 int main(int argc, char* argv[])
 {

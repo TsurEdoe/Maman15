@@ -10,7 +10,7 @@ private:
 	unsigned char _key[DEFAULT_KEYLENGTH];
 	AESWrapper(const AESWrapper& aes);
 public:
-	AESWrapper(const unsigned char* key, unsigned int size);
+	AESWrapper(const unsigned char* key, size_t size);
 	~AESWrapper();
 
 	const unsigned char* getKey() const;

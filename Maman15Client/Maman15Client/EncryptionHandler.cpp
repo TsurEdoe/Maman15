@@ -1,7 +1,7 @@
 #include "EncryptionHandler.h"
 
 EncryptionHandler::EncryptionHandler(RSAWrapper* rsaWrapper, ClientSocketHandler* clientSocketHandler) :
-    _rsaWrapper(rsaWrapper), _clientSocketHandler(clientSocketHandler) { }
+    _rsaWrapper(rsaWrapper), _clientSocketHandler(clientSocketHandler) , _aesWrapper(NULL) { }
 
 bool EncryptionHandler::sendPublicKeyToServer(uint8_t* clientUUID, string userName)
 {
@@ -33,25 +33,27 @@ bool EncryptionHandler::receiveSharedSecret()
 
     ServerResponse sharedKeyResponse(buffer, sizeof(ServerResponse::ServerResponseHeader) + UUID_LENGTH);
 
-    if (sharedKeyResponse.header._code == ServerResponse:::CLIENT_AES_KEY)
+    if (sharedKeyResponse.header._code == ServerResponse::CLIENT_AES_KEY)
     {
-        memcpy((void*)clientUUIDBuffer, (void*)registrationRespone.payload.payload, (size_t)UUID_LENGTH);
-        cout << "Registration succefull, got uuid " << clientUUIDBuffer << " from server" << endl;
+        string decrypteSharedKey = _rsaWrapper->decrypt((const char*)sharedKeyResponse.payload.payload, sharedKeyResponse.payload.size);
+        _aesWrapper = new AESWrapper((const unsigned char*)decrypteSharedKey.c_str(), decrypteSharedKey.size());
 
-        return false;
+        cout << "Initialized encryption handler successfully" << endl;
+        
+        return true;
     }
 
-    cout << "Failed registraion with server: Got bad response type (" << registrationRespone.header._code << ")" << endl;
+    cout << "Failed initizlizing encryption handler, bad response " << sharedKeyResponse.header._code << " type received from server" << endl;
 
     return false;
 }
 
-bool EncryptionHandler::getSharedSecret()
+bool EncryptionHandler::initializeHandler(uint8_t* clientUUID, string userName)
 {
-
+    return sendPublicKeyToServer(clientUUID, userName) && receiveSharedSecret();
 }
 
 AESWrapper* EncryptionHandler::getAESEncryptionWithServer()
 {
-    
+    return _aesWrapper;
 }

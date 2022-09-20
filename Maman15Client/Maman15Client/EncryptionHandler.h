@@ -10,12 +10,13 @@ class EncryptionHandler
 private:
     RSAWrapper* _rsaWrapper;
     ClientSocketHandler* _clientSocketHandler;
+    AESWrapper* _aesWrapper;
 
     bool sendPublicKeyToServer(uint8_t* clientUUID, string userName);
     bool receiveSharedSecret();
 public:
     EncryptionHandler(RSAWrapper* rsaWrapper, ClientSocketHandler* clientSocketHandler);
-    bool getSharedSecret(uint8_t* clientUUID, string userName);
+    bool initializeHandler(uint8_t* clientUUID, string userName);
 
     AESWrapper* getAESEncryptionWithServer();
 }

@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <immintrin.h>
 
-AESWrapper::AESWrapper(const unsigned char* key, unsigned int length)
+AESWrapper::AESWrapper(const unsigned char* key, size_t length)
 {
 	if (length != DEFAULT_KEYLENGTH)
 	{
