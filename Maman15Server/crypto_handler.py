@@ -24,19 +24,12 @@ class CryptoHandler:
     def get_aes_key(self):
         return get_random_bytes(32)
 
-    def __get_iv_for_encryption():
-        return get_random_bytes(AES.block_size)
-
-
     def encrypt_data(self, plain_data, encryption_key):
         plain_data = pad(plain_data)
-        iv = self.__get_iv_for_encryption()
-        cipher = AES.new(encryption_key, AES.MODE_CBC, iv)
-        return base64.b64encode(iv + cipher.encrypt(plain_data))
-    
-    
+        cipher = AES.new(encryption_key, AES.MODE_CBC, 0)
+        return base64.b64encode(cipher.encrypt(plain_data))
+        
     def decrypt_data(self, cipher_data, decryption_key):
         cipher_data = base64.b64decode(cipher_data)
-        iv = cipher_data[:16]
-        cipher = AES.new(decryption_key, AES.MODE_CBC, iv)
+        cipher = AES.new(decryption_key, AES.MODE_CBC, 0)
         return unpad(cipher.decrypt(cipher_data[16:]))

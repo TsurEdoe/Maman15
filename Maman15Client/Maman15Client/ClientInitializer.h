@@ -1,10 +1,13 @@
 #pragma once
-#include "ClientSocketHandler.h"
-#include "RegistrationHandler.h"
-#include "FileUtils.h"
 #include <iostream>
 #include <boost/algorithm/string.hpp>
 #include <exception>
+#include <string>
+#include "ClientSocketHandler.h"
+#include "RegistrationHandler.h"
+#include "FileUtils.h"
+#include "RSAWrapper.h"
+#include "Base64Wrapper.h"
 
 #define TRANSFER_INFO_FILE			"transfer.info"
 #define CLIENT_CONNECTION_INFO_FILE "me.info"
@@ -21,12 +24,22 @@ class ClientInitializer
 {
 private:
 	ClientSocketHandler* _clientSocketHandler;
-	RegistrationHandler _registrationHandler;
+	RegistrationHandler* _registrationHandler;
 	string _userName;
 	string _fileFullPath;
+	uint8_t _clientUUID[UUID_LENGTH] = { 0 };
+	RSAWrapper* _rsaWrapper;
 
 	bool getTransferInformation();
+	bool getClientConnectionInfo();
 public:
 	ClientInitializer();
-	ClientSocketHandler* initializeClient();
+	~ClientInitializer();
+	bool initializeClient();
+
+	string getUserName();
+	string getFileFullPath();
+	uint8_t* getClientUUID();
+	ClientSocketHandler* getClientSocketHandler();
+	RSAWrapper* getRSAWrapper();
 };

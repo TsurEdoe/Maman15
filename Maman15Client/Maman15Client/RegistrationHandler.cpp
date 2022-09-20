@@ -1,43 +1,43 @@
 #include "RegistrationHandler.h"
 
-RegistrationHandler::RegistrationHandler(ClientSocketHandler* clientSocketHandler) : _clientSocketHandler {clientSocketHandler} {}
+RegistrationHandler::RegistrationHandler(ClientSocketHandler* clientSocketHandler) : _clientSocketHandler{ clientSocketHandler } {}
 
-bool RegistrationHandler::registerClient(string clientUserName)
+bool RegistrationHandler::registerClient(string clientUserName, uint8_t* clientUUIDBuffer)
 {
-    uint8_t* registrationPacket = new uint8_t[];
+    uint8_t buffer[PACKET_SIZE];
+    memset(buffer, 0, PACKET_SIZE);
 
-    request->_payload.size = clientUserName.size();
-	uint32_t clientNameLength = (PACKET_SIZE - request->sizeWithoutPayload());
-	request->_payload.payload = new uint8_t[clientNameLength];
-	memcpy_s(clientName.cstr(), request->_payload.payload, clientNameLength)
-    
-	request->_status = ClientRequest::RequestType.CLIENT_REGISTRATION;
-	request->serializeIntoBuffer(buffer);
+    ClientRequest registrationRequest;
+    registrationRequest._code = ClientRequest::CLIENT_REGISTRATION;
+    memcpy(registrationRequest._payload.payload, clientUserName.c_str(), clientUserName.size());
 
-	if (!_clientSocketHandler.send(buffer))
+    registrationRequest.serializeIntoBuffer(buffer);
+
+    if (!_clientSocketHandler->send(buffer))
     {
         cout << "ERROR: RegistrationHandler - Request sending on socket failed!" << endl;
-		delete request->_payload.payload;
-        request->_payload.payload = NULL;
-        delete request;
-		request = NULL;
-		return false;
+        return NULL;
     }
 
-    uint8_t buffer[PACKET_SIZE];
-    ServerResponse* serverResponse = NULL;
+    memset(buffer, 0, PACKET_SIZE);
 
-    if (!_clientSocketHandler.receive(buffer))
+    if (!_clientSocketHandler->receive(buffer))
     {
-        err << "ERROR: RegistrationHandler - Failed to receive first message from server!" << endl;
-        return false;
+        cout << "ERROR: RegistrationHandler - Failed to receive registration response from server!" << endl;
+        return NULL;
     }
 
-    serverResponse = new ServerResponse(buffer, PACKET_SIZE);
-    
-    if (serverResponse->)
+    ServerResponse registrationRespone(buffer, sizeof(ServerResponse::ServerResponseHeader) + UUID_LENGTH);
 
-    delete serverResponse;
+    if (registrationRespone.header._code == ServerResponse::REGISTRATION_SUCCESS)
+    {
+        memcpy((void*)clientUUIDBuffer, (void*)registrationRespone.payload.payload, (size_t)UUID_LENGTH);
+        cout << "Registration succefull, got uuid " << clientUUIDBuffer << " from server" << endl;
+        
+        return true;
+    }
 
-    return true;
+    cout << "Failed registraion with server: Got bad response type (" << registrationRespone.header._code << ")" << endl;
+
+    return false;
 }

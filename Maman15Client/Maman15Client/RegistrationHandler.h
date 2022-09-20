@@ -1,7 +1,7 @@
 #pragma once
 #include "ClientSocketHandler.h"
-#include "ClientRequest.h"
 #include "ServerResponse.h"
+#include "ClientRequest.h"
 
 class RegistrationHandler
 {
@@ -10,5 +10,5 @@ private:
 
 public:
 	RegistrationHandler(ClientSocketHandler* clientSocketHandler);
-	string registerClient(string clientUserName);
+	bool registerClient(string clientUserName, uint8_t* clientUUIDBuffer);
 };
