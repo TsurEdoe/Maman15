@@ -156,7 +156,6 @@
     <ClInclude Include="ClientInitializer.h" />
     <ClInclude Include="ClientSocketHandler.h" />
     <ClInclude Include="CommonPayload.h" />
-    <ClInclude Include="CryptoUtils.h" />
     <ClInclude Include="EncryptionHandler.h" />
     <ClInclude Include="FileHandler.h" />
     <ClInclude Include="FileUtils.h" />

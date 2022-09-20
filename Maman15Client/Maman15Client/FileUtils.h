@@ -16,7 +16,6 @@ public:
     static bool writeToFile(fstream& fs, const uint8_t* const file, const uint32_t bytes);
     static bool readFromFile(fstream& fs, uint8_t* const file, uint32_t bytes);
     static uint32_t calculateFileSize(fstream& fs);
-    static bool getFilesList(string& filepath, set<string>& filesList);
     static bool doesFileExist(const string& filepath);
     static bool deleteFile(const string& filepath);
 };

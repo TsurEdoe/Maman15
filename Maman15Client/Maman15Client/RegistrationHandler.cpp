@@ -7,10 +7,7 @@ bool RegistrationHandler::registerClient(string clientUserName, uint8_t* clientU
     uint8_t buffer[PACKET_SIZE];
     memset(buffer, 0, PACKET_SIZE);
 
-    ClientRequest registrationRequest;
-    registrationRequest._code = ClientRequest::CLIENT_REGISTRATION;
-    memcpy(registrationRequest._payload.payload, clientUserName.c_str(), clientUserName.size());
-
+    ClientRequest registrationRequest(clientUUIDBuffer, ClientRequest::CLIENT_REGISTRATION, clientUserName.size(), (uint8_t*)clientUserName.c_str());
     registrationRequest.serializeIntoBuffer(buffer);
 
     if (!_clientSocketHandler->send(buffer))

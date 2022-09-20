@@ -9,16 +9,12 @@ bool EncryptionHandler::sendPublicKeyToServer(uint8_t* clientUUID, string userNa
     memset(buffer, 0, PACKET_SIZE);
 
     string publicKey = this->_rsaWrapper->getPublicKey();
-    ClientRequest sendPublicKeyRequest;
-    memcpy(sendPublicKeyRequest._clientId, clientUUID, UUID_LENGTH);
-    sendPublicKeyRequest._code = ClientRequest::CLIENT_PUBLIC_KEY;
-    memcpy(sendPublicKeyRequest._payload.payload, userName.c_str(), userName.size());
-
+    
+    ClientRequest sendPublicKeyRequest(clientUUID, ClientRequest::CLIENT_PUBLIC_KEY, userName.size(), (uint8_t*)userName.c_str());
     sendPublicKeyRequest.serializeIntoBuffer(buffer);
 
     return _clientSocketHandler->send(buffer);
 }
-
 
 bool EncryptionHandler::receiveSharedSecret()
 {
@@ -53,7 +49,20 @@ bool EncryptionHandler::initializeHandler(uint8_t* clientUUID, string userName)
     return sendPublicKeyToServer(clientUUID, userName) && receiveSharedSecret();
 }
 
-AESWrapper* EncryptionHandler::getAESEncryptionWithServer()
+bool EncryptionHandler::sendEncryptedData(uint8_t* plainDataToSend, uint32_t sizeOfDataToSend, uint8_t* clientUUID, ClientRequest::RequestCode requestCode)
 {
-    return _aesWrapper;
+    uint8_t buffer[PACKET_SIZE];
+    memset(buffer, 0, PACKET_SIZE);
+
+    string encryptedData = this->_aesWrapper->encrypt((char*)plainDataToSend, sizeOfDataToSend);
+    
+    ClientRequest sendEncryptedDataToServer;
+    
+    memcpy(sendEncryptedDataToServer._clientId, clientUUID, UUID_LENGTH);
+    sendEncryptedDataToServer._code = requestCode;
+    memcpy(sendEncryptedDataToServer._payload.payload, encryptedData.c_str(), encryptedData.size());
+
+    sendEncryptedDataToServer.serializeIntoBuffer(buffer);
+
+    return _clientSocketHandler->send(buffer);
 }

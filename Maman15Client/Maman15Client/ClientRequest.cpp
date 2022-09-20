@@ -1,11 +1,28 @@
 #pragma once
-#include <string>
 #include "ClientRequest.h"
 
 /*
 	Default C'tor
 */
 ClientRequest::ClientRequest() : _clientId({ 0 }), _version(CLIENT_VERSION), _code(0) {}
+
+ClientRequest::ClientRequest(uint8_t* clientId, uint16_t code, size_t payloadSize, uint8_t* payload, const uint8_t version = CLIENT_VERSION) :
+	_clientId({ 0 }), _version(CLIENT_VERSION), _code(0)
+{
+	if (clientId == NULL || version == -1 || payloadSize == 0 || payload == NULL)
+	{
+		cout << "Failed creating ClientRequest, bad parameters sent" << endl;
+		return;
+	}
+
+	memcpy(this->_clientId, clientId, UUID_LENGTH);
+	
+	this->_code = code;
+	this->_payload.size = payloadSize;
+	this->_payload.payload = new uint8_t[payloadSize];
+
+	memcpy(this->_payload.payload, payload, payloadSize);
+}
 
 /*
 	D'tor

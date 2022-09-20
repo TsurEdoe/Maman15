@@ -119,26 +119,6 @@ uint32_t FileUtils::calculateFileSize(fstream& fs)
 }
 
 /*
-   Retrieves a list of file names given a folder path. Return false if error occurred. true, if filesList valid.
- */
-bool FileUtils::getFilesList(string& folderPath, set<string>& filesList)
-{
-	try
-	{
-		for (const auto& entry : directory_iterator(folderPath))
-		{
-			filesList.insert(entry.path().filename().string());
-		}
-		return true;
-	}
-	catch(exception&)
-	{
-		filesList.clear();
-		return false;
-	}
-}
-
-/*
    Checks if file exists given a file path. Return true if file exists.
  */
 bool FileUtils::doesFileExist(const string& filePath)

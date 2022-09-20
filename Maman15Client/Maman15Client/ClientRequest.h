@@ -1,5 +1,9 @@
 #pragma once
+#include <string>
+#include <iostream>
 #include "CommonPayload.h"
+
+using namespace std;
 
 #define CLIENT_VERSION 3
 #define PACKET_SIZE 1024
@@ -26,6 +30,7 @@ struct ClientRequest
 	CommonPayload _payload;
 
 	ClientRequest();
+	ClientRequest(uint8_t* clientId, uint16_t code, size_t payloadSize, uint8_t* payload, const uint8_t version = CLIENT_VERSION);
 	~ClientRequest();
 	uint32_t sizeWithoutPayload() const;
 	void serializeIntoBuffer(uint8_t* buffer);
