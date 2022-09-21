@@ -4,12 +4,12 @@
 /*
 	Default C'tor
 */
-ClientRequest::ClientRequest() : _clientId({ 0 }), _version(CLIENT_VERSION), _code(0) {}
+ClientRequest::ClientRequest() : _clientId{ }, _version(CLIENT_VERSION), _code(0) {}
 
-ClientRequest::ClientRequest(uint8_t* clientId, uint16_t code, size_t payloadSize, uint8_t* payload, const uint8_t version = CLIENT_VERSION) :
-	_clientId({ 0 }), _version(CLIENT_VERSION), _code(0)
+ClientRequest::ClientRequest(uint8_t* clientId, uint16_t code, size_t payloadSize, uint8_t* payload) :
+	_clientId{ }, _version(CLIENT_VERSION), _code(0)
 {
-	if (clientId == NULL || version == -1 || payloadSize == 0 || payload == NULL)
+	if (clientId == NULL)
 	{
 		cout << "Failed creating ClientRequest, bad parameters sent" << endl;
 		return;
@@ -19,9 +19,12 @@ ClientRequest::ClientRequest(uint8_t* clientId, uint16_t code, size_t payloadSiz
 	
 	this->_code = code;
 	this->_payload.size = payloadSize;
-	this->_payload.payload = new uint8_t[payloadSize];
+	this->_payload.payload = (payloadSize > 0) ? new uint8_t[payloadSize] : NULL;
 
-	memcpy(this->_payload.payload, payload, payloadSize);
+	if (this->_payload.payload)
+	{
+		memcpy(this->_payload.payload, payload, payloadSize);
+	}
 }
 
 /*

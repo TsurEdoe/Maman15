@@ -1,9 +1,6 @@
-#include <boost/asio.hpp>
 #include "ClientInitializer.h"
-#include "EncryptionHandler.h"
-#include "FileHandler.h"
+#include "MainClient.h"
 
-#define MAX_RETRIES_FILE_RESEND 3
 
 int main(int argc, char* argv[])
 {
@@ -23,23 +20,11 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    EncryptionHandler* encryptionHandler = new EncryptionHandler(rsaWrapper, clientSocketHandler);
+    MainClient mainClient(clientSocketHandler, rsaWrapper, clientUUID, userName);
 
-    if (!encryptionHandler->initializeHandler(clientUUID, userName))
+    if (!mainClient.runClient(clientInitializer.getFileFullPath()))
     {
-        delete encryptionHandler;
         return -1;
-    }
-
-    FileHandler fileHandler(encryptionHandler);
-
-    for (size_t i = 0; i < MAX_RETRIES_FILE_RESEND; i++)
-    {
-        if (!fileHandler.sendEncryptedFile(clientInitializer.getFileFullPath(), clientUUID))
-        {
-            delete encryptionHandler;
-            return -1;
-        }
     }
 
     return 0;

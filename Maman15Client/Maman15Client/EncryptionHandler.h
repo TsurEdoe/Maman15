@@ -17,5 +17,5 @@ private:
 public:
     EncryptionHandler(RSAWrapper* rsaWrapper, ClientSocketHandler* clientSocketHandler);
     bool initializeHandler(uint8_t* clientUUID, string userName);
-    bool sendEncryptedData(uint8_t* plainDataToSend, uint32_t sizeOfDataToSend, uint8_t* clientUUID, ClientRequest::RequestCode requestCode);
-}
+    bool sendEncryptedFileData(uint8_t* plainDataToSend, uint32_t sizeOfDataToSend, uint8_t* clientUUID, ClientRequest::RequestCode requestCode);
+};

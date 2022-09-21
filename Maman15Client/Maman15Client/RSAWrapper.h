@@ -17,6 +17,7 @@ private:
 
 public:
 	RSAWrapper();
+	RSAWrapper(const std::string& privateKey);
 	~RSAWrapper();
 
 	std::string getPrivateKey() const;

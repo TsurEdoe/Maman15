@@ -7,7 +7,6 @@ using namespace std;
 
 #define CLIENT_VERSION 3
 #define PACKET_SIZE 1024
-#define UUID_LENGTH 16
 
 /*
 	A data struct to represent the request to the server
@@ -30,7 +29,7 @@ struct ClientRequest
 	CommonPayload _payload;
 
 	ClientRequest();
-	ClientRequest(uint8_t* clientId, uint16_t code, size_t payloadSize, uint8_t* payload, const uint8_t version = CLIENT_VERSION);
+	ClientRequest(uint8_t* clientId, uint16_t code, size_t payloadSize, uint8_t* payload);
 	~ClientRequest();
 	uint32_t sizeWithoutPayload() const;
 	void serializeIntoBuffer(uint8_t* buffer);

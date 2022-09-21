@@ -145,6 +145,7 @@
     <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="FileUtils.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainClient.cpp" />
     <ClCompile Include="RegistrationHandler.cpp" />
     <ClCompile Include="RSAWrapper.cpp" />
     <ClCompile Include="ClientRequest.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="EncryptionHandler.h" />
     <ClInclude Include="FileHandler.h" />
     <ClInclude Include="FileUtils.h" />
+    <ClInclude Include="MainClient.h" />
     <ClInclude Include="RegistrationHandler.h" />
     <ClInclude Include="RSAWrapper.h" />
     <ClInclude Include="ClientRequest.h" />

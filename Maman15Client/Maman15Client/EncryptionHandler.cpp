@@ -49,7 +49,8 @@ bool EncryptionHandler::initializeHandler(uint8_t* clientUUID, string userName)
     return sendPublicKeyToServer(clientUUID, userName) && receiveSharedSecret();
 }
 
-bool EncryptionHandler::sendEncryptedData(uint8_t* plainDataToSend, uint32_t sizeOfDataToSend, uint8_t* clientUUID, ClientRequest::RequestCode requestCode)
+bool EncryptionHandler::sendEncryptedFileData(uint8_t* plainDataToSend, uint32_t sizeOfDataToSend, 
+    uint8_t* clientUUID, ClientRequest::RequestCode requestCode)
 {
     uint8_t buffer[PACKET_SIZE];
     memset(buffer, 0, PACKET_SIZE);

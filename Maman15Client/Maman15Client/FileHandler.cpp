@@ -11,7 +11,7 @@ bool FileHandler::sendEncryptedFile(string fileFullPath, uint8_t* clientUUID)
 	}
 
 	uint8_t* dataToSend = readDataFromFile(fileFullPath);
-	if (!this->_encryptionHandler->sendEncryptedData(dataToSend, fileSize, clientUUID, ClientRequest::RequestCode::CLIENT_ENCRYPTED_FILE))
+	if (!this->_encryptionHandler->sendEncryptedFileData(dataToSend, fileSize, clientUUID, ClientRequest::RequestCode::CLIENT_ENCRYPTED_FILE))
 	{
 		cout << "Failed sending encrypted file " << fileFullPath << " to server" << endl;
 		delete dataToSend;
@@ -83,4 +83,22 @@ uint8_t* FileHandler::readDataFromFile(string fileFullPath)
 	}
 
 	return dataFromFileToSend;
+}
+
+uint32_t FileHandler::calculateFileCRC(string fileFullPath)
+{
+	size_t fileSize = validateFileToSend(fileFullPath);
+	if (fileSize == 0)
+	{
+		cout << "Failed calculating file " << fileFullPath << " CRC." << endl;
+		return 0;
+	}
+
+	uint8_t* fileData = this->readDataFromFile(fileFullPath);
+	
+	boost::crc_32_type result;
+	
+	result.process_bytes(fileData, fileSize);
+
+	return result.checksum();
 }

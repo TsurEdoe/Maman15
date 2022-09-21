@@ -148,7 +148,8 @@ bool ClientInitializer::getClientConnectionInfo()
 		return false;
 	}
 	
-	this->_clientUUID = clientConnectionInfo[1];
+	memcpy_s(this->_clientUUID, UUID_LENGTH, clientConnectionInfo[1].c_str(), clientConnectionInfo.size());
+
 	this->_rsaWrapper = new RSAWrapper(Base64Wrapper::decode(clientConnectionInfo[2]));
 
 	cout << "SUCCESS: Transfer information read successfully!" << endl;

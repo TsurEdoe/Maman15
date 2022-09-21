@@ -1,8 +1,9 @@
 #pragma once
 #include <iostream>
-#include <boost/asio.hpp>
-#include <boost/algorithm/string.hpp>
 #include <exception>
+#include <boost/asio.hpp>
+#include <boost/asio/read.hpp>
+#include <boost/asio/write.hpp>
 
 using namespace std;
 using namespace boost::asio;
