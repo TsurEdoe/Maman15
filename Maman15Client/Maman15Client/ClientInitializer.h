@@ -19,6 +19,7 @@ using namespace std;
 	1. Reads transfer.info
 	2. Opens connection to the server
 	3. Registers if needed
+	4. Reads/Writes me.info file
 */
 class ClientInitializer
 {
@@ -32,9 +33,12 @@ private:
 
 	bool getTransferInformation();
 	bool getClientConnectionInfo();
+	
+	static vector<string> readInformationFile(string fileFullPath);
 public:
 	ClientInitializer();
 	~ClientInitializer();
+	
 	bool initializeClient();
 
 	string getUserName();

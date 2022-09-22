@@ -9,6 +9,9 @@
 #define FILE_CONTENT_FEILD_SIZE 4
 #define FILE_NAME_SIZE 255
 
+/*
+    Main client class to run the client operation
+*/
 class MainClient
 {
 private:

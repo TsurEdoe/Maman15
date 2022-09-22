@@ -2,6 +2,9 @@
 
 #include <string>
 
+/*
+	Wrapper for encrypting and decrypting data using AES symtric algorithm
+*/
 class AESWrapper
 {
 public:

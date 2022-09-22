@@ -5,6 +5,11 @@
 #include "ClientRequest.h"
 #include "ServerResponse.h"
 
+/*
+    Handles all encryption needs for client operations:
+    1. Handles key exchanging with server
+    2. Sends encrypted data to the server
+*/
 class EncryptionHandler
 {
 private:

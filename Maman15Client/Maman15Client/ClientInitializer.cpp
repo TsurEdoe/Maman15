@@ -27,24 +27,44 @@ ClientInitializer::~ClientInitializer()
 	this->_registrationHandler = NULL;
 }
 
+/*
+	Getter
+*/
 ClientSocketHandler* ClientInitializer::getClientSocketHandler()
 {
 	return this->_clientSocketHandler;
 }
 
+/*
+	Getter
+*/
 RSAWrapper* ClientInitializer::getRSAWrapper()
 {
 	return this->_rsaWrapper;
 }
 
+/*
+	Getter
+*/
 uint8_t* ClientInitializer::getClientUUID()
 {
 	return this->_clientUUID;
 }
 
+/*
+	Getter
+*/
 string ClientInitializer::getUserName()
 {
 	return this->_userName;
+}
+
+/*
+	Getter
+*/
+string ClientInitializer::getFileFullPath()
+{
+	return this->_fileFullPath;
 }
 
 /*
@@ -60,11 +80,13 @@ bool ClientInitializer::initializeClient()
 
 	this->_registrationHandler = new RegistrationHandler(this->_clientSocketHandler);
 
+	// Found me.info
 	if (FileUtils::doesFileExist(CLIENT_CONNECTION_INFO_FILE))
 	{
 		cout << "Found " << CLIENT_CONNECTION_INFO_FILE << " skipping registration." << endl;
 		return getClientConnectionInfo();
 	}
+	// Registers client
 	else
 	{
 		cout << CLIENT_CONNECTION_INFO_FILE << " not found, going to registration." << endl;
@@ -107,28 +129,41 @@ bool ClientInitializer::initializeClient()
 	}
 }
 
-bool ClientInitializer::getClientConnectionInfo()
+/*
+	Reads lines from a given file and returns the information as a vector of strings
+*/
+vector<string> ClientInitializer::readInformationFile(string fileFullPath)
 {
-	uint8_t clientConnectionInfoBuffer[FILE_BUFFER_SIZE];
+	uint8_t fileInfoBuffer[FILE_BUFFER_SIZE];
+	vector<string> fileInformation;
 
 	fstream fs;
-	if (!FileUtils::fileRequestOpen(CLIENT_CONNECTION_INFO_FILE, fs))
+	if (!FileUtils::fileRequestOpen(fileFullPath, fs))
 	{
-		cout << "ERROR: Connecting to server, file " << CLIENT_CONNECTION_INFO_FILE << " failed to open." << endl;
-		return false;
+		cout << "ERROR: Connecting to server, file " << fileFullPath << " failed to open." << endl;
+		return fileInformation;
 	}
 
-	if (!FileUtils::readFromFile(fs, clientConnectionInfoBuffer, FILE_BUFFER_SIZE))
+	if (!FileUtils::readFromFile(fs, fileInfoBuffer, FILE_BUFFER_SIZE))
 	{
-		cout << "ERROR: Connecting to server, file " << CLIENT_CONNECTION_INFO_FILE << " failed to be read." << endl;
+		cout << "ERROR: Connecting to server, file " << fileFullPath << " failed to be read." << endl;
 		FileUtils::closeFile(fs);
-		return false;
+		return fileInformation;
 	}
 
 	FileUtils::closeFile(fs);
 
-	vector<string> clientConnectionInfo;
-	boost::split(clientConnectionInfo, clientConnectionInfoBuffer, boost::is_any_of("\n"));
+	
+	boost::split(fileInformation, fileInfoBuffer, boost::is_any_of("\n"));
+	return fileInformation;
+}
+
+/*
+	Reads me.info and initializes the rsaWrapper of the client initializer
+*/
+bool ClientInitializer::getClientConnectionInfo()
+{
+	vector<string> clientConnectionInfo = ClientInitializer::readInformationFile(CLIENT_CONNECTION_INFO_FILE);
 
 	if (clientConnectionInfo.size() != 3)
 	{
@@ -157,31 +192,16 @@ bool ClientInitializer::getClientConnectionInfo()
 	return true;
 }
 
+/*
+	Reads transfer.info and initializes the communication to the server
+*/
 bool ClientInitializer::getTransferInformation()
 {
-	uint8_t transferInfoBuffer[FILE_BUFFER_SIZE];
-
-	fstream fs;
-	if (!FileUtils::fileRequestOpen(TRANSFER_INFO_FILE, fs))
-	{
-		cout << "ERROR: Connecting to server, file " << TRANSFER_INFO_FILE << " failed to open." << endl;
-		return false;
-	}
-
-	if (!FileUtils::readFromFile(fs, transferInfoBuffer, FILE_BUFFER_SIZE))
-	{
-		cout << "ERROR: Connecting to server, file " << TRANSFER_INFO_FILE << " failed to be read." << endl;
-		FileUtils::closeFile(fs);
-		return false;
-	}
-
-	vector<string> transferInformation;
-	boost::split(transferInformation, transferInfoBuffer, boost::is_any_of("\n"));
+	vector<string> transferInformation = ClientInitializer::readInformationFile(TRANSFER_INFO_FILE);
 
 	if (transferInformation.size() != 3)
 	{
 		cout << "ERROR: Connecting to server, transfer information not is in wrong pattern" << endl;
-		FileUtils::closeFile(fs);
 		return false;
 	}
 
@@ -191,7 +211,6 @@ bool ClientInitializer::getTransferInformation()
 	if (serverInformation.size() != 2)
 	{
 		cout << "ERROR: Connecting to server, server connection information is in wrong pattern" << endl;
-		FileUtils::closeFile(fs);
 		return false;
 	}
 
@@ -204,7 +223,6 @@ bool ClientInitializer::getTransferInformation()
 	catch(exception e)
 	{
 		cout << "ERROR: Connecting to server, given port is not a number" << e.what() << endl;
-		FileUtils::closeFile(fs);
 		return false;
 	}
 
@@ -215,7 +233,5 @@ bool ClientInitializer::getTransferInformation()
 	this->_fileFullPath = serverInformation[2];
 
 	cout << "SUCCESS: Transfer information read successfully!" << endl;
-
-	FileUtils::closeFile(fs);
 	return true;
 }

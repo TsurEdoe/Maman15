@@ -3,7 +3,9 @@
 #include <string>
 #include <base64.h>
 
-
+/*
+	Wrapper to encode and decode data using base64
+*/
 class Base64Wrapper
 {
 public:

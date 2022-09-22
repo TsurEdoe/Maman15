@@ -8,6 +8,9 @@
 #define BITS 1024
 #define KEYSIZE  160
 
+/*
+	Wrapper for encrypting and decrypting data using RSA asymetric algorithm
+*/
 class RSAWrapper
 {
 private:

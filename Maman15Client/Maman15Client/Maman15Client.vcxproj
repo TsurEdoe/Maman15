@@ -76,12 +76,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\boost_1_79_0;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870\x64\Output\Release\cryptlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cryptlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\boost_1_79_0\bin\x64\lib;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\cryptopp870\x64\Output\Release;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -92,14 +94,16 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\boost_1_79_0;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870\x64\Output\Release\cryptlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cryptlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\boost_1_79_0\bin\x64\lib;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\cryptopp870\x64\Output\Release;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -108,13 +112,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\boost_1_79_0;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\cryptopp870;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\boost_1_79_0;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\boost_1_79_0;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\cryptopp870;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870\x64\Output\Release\cryptlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\boost_1_79_0\libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cryptlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\boost_1_79_0\bin\x64\lib;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\cryptopp870\x64\Output\Release;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\boost_1_79_0\libs</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -125,14 +130,16 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\boost_1_79_0;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870\x64\Output\Release\cryptlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cryptlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\boost_1_79_0\bin\x64\lib;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\cryptopp870\x64\Output\Release;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -138,18 +138,3 @@ bool FileUtils::doesFileExist(const string& filePath)
 		return false;
 	}
 }
-
-/*
-   Removes a file given a file path. Return true if successfully removed the file. False, otherwise. If file not exists, return false.
- */
-bool FileUtils::deleteFile(const string& filePath)
-{
-	try
-	{
-		return (0 == remove(filePath.c_str()));
-	}
-	catch (exception&)
-	{
-		return false;
-	}
-}

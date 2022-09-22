@@ -1,6 +1,8 @@
 #include "Base64Wrapper.h"
 
-
+/*
+	Encodes the argument given and returns the encoded base64 string
+*/
 std::string Base64Wrapper::encode(const std::string& str)
 {
 	std::string encoded;
@@ -13,6 +15,9 @@ std::string Base64Wrapper::encode(const std::string& str)
 	return encoded;
 }
 
+/*
+	Decodes the argument given and returns the decoded plain string
+*/
 std::string Base64Wrapper::decode(const std::string& str)
 {
 	std::string decoded;

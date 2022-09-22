@@ -5,6 +5,11 @@
 
 #define CHECKSUM_SIZE 4
 
+/*
+    Handles file operations for client:
+    1. Sends an encrypted file using the encryption handler
+    2. Calculates file CRC
+*/
 class FileHandler
 {
 private:

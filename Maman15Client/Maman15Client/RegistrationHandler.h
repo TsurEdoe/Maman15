@@ -3,6 +3,9 @@
 #include "ServerResponse.h"
 #include "ClientRequest.h"
 
+/*
+	Handles the client registration to the server
+*/
 class RegistrationHandler
 {
 private:

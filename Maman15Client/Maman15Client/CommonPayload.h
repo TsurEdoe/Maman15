@@ -3,7 +3,10 @@
 
 #define UUID_LENGTH 16
 
-struct CommonPayload  // Common for Request & Response.
+/*
+	Common for Request & Response.
+*/
+struct CommonPayload
 {
 	size_t size;
 	uint8_t* payload; 
