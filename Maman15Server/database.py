@@ -1,5 +1,5 @@
 import logging, sqlite3, threading, uuid 
-from utils import SERVER_DB_FILE_NAME
+from consts import SERVER_DB_FILE_NAME
 
 """
     Singleton class used for handling all DB operations (create, insert, update)

@@ -3,18 +3,10 @@
 /*
 	C'tor
 */
-ClientSocketHandler::ClientSocketHandler(std::string ip, uint8_t port)
+ClientSocketHandler::ClientSocketHandler(std::string ip, uint16_t port) : _ip(ip), _port(port)
 {
 	io_service io_service;
 	this->_sock = new tcp::socket(io_service);
-	try
-	{
-		_sock->connect(tcp::endpoint(ip::address::from_string(ip), port));
-	}
-	catch (exception e)
-	{
-		cout << "ERROR: Failed connection to server: " << e.what() << endl;
-	}
 }
 
 /*
@@ -23,6 +15,23 @@ ClientSocketHandler::ClientSocketHandler(std::string ip, uint8_t port)
 ClientSocketHandler::~ClientSocketHandler()
 {
 	this->_sock->close();
+}
+
+/*
+	Connects the socket to the server
+*/
+bool ClientSocketHandler::connect()
+{
+	try
+	{
+		_sock->connect(tcp::endpoint(ip::address::from_string(_ip), _port));
+	}
+	catch (exception e)
+	{
+		cout << "ERROR: Failed connection to server: " << e.what() << endl;
+		return false;
+	}
+	return true;
 }
 
 /*

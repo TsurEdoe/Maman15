@@ -101,7 +101,8 @@ bool ClientInitializer::initializeClient()
 		this->_rsaWrapper = new RSAWrapper();
 		
 		cout << "Client " << this->_userName << " registered, writing client connection information to " << CLIENT_CONNECTION_INFO_FILE << " file." << endl;
-
+		
+		// Parses client information
 		string clientConnectionInfo[3];
 		clientConnectionInfo[0] = this->_userName;
 		clientConnectionInfo[1] = (char*)this->_clientUUID;
@@ -109,8 +110,9 @@ bool ClientInitializer::initializeClient()
 		
 		string clientConnectionInfoBuffer = boost::algorithm::join(clientConnectionInfo, "\n");
 		
+		// Writing client information into me.info file
 		fstream fs;
-		if (!FileUtils::fileRequestOpen(CLIENT_CONNECTION_INFO_FILE, fs))
+		if (!FileUtils::fileRequestOpen(CLIENT_CONNECTION_INFO_FILE, fs, true))
 		{
 			cout << "ERROR: Connecting to server, file " << CLIENT_CONNECTION_INFO_FILE << " failed to open." << endl;
 			return false;
@@ -153,8 +155,15 @@ vector<string> ClientInitializer::readInformationFile(string fileFullPath)
 
 	FileUtils::closeFile(fs);
 
-	
 	boost::split(fileInformation, fileInfoBuffer, boost::is_any_of("\n"));
+	
+	string lastLine = fileInformation[fileInformation.size() - 1];
+	// Remove last empty line
+	if (lastLine.empty() == 0)
+	{
+		fileInformation.pop_back();
+	}
+
 	return fileInformation;
 }
 
@@ -214,7 +223,7 @@ bool ClientInitializer::getTransferInformation()
 		return false;
 	}
 
-	uint8_t port;
+	uint16_t port;
 
 	try
 	{
@@ -228,6 +237,11 @@ bool ClientInitializer::getTransferInformation()
 
 	// Server information is IP:PORT
 	this->_clientSocketHandler = new ClientSocketHandler(serverInformation[0], port);
+
+	if (!this->_clientSocketHandler->connect())
+	{
+		return false;
+	}
 
 	this->_userName = serverInformation[1];
 	this->_fileFullPath = serverInformation[2];

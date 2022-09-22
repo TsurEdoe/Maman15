@@ -3,8 +3,8 @@ import utils
 from client_connection_handler import ClientConnectionHandler
 
 def main():
+    logging.basicConfig(encoding='utf-8', level=logging.INFO)
     server_port = utils.read_server_info_from_file()
-    
     logging.info("Starting server on port: {0}".format(server_port))
     try:
         client_connection_handler = ClientConnectionHandler(server_port, "127.0.0.1")

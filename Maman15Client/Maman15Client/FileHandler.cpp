@@ -1,7 +1,13 @@
 #include "FileHandler.h"
 
+/*
+	C'tor
+*/
 FileHandler::FileHandler(EncryptionHandler* encryptionHandler) : _encryptionHandler(encryptionHandler) { }
 
+/*
+	Sends an encrypted file message to the server
+*/
 bool FileHandler::sendEncryptedFile(string fileFullPath, uint8_t* clientUUID)
 {
 	uint32_t fileSize = validateFileToSend(fileFullPath);
@@ -23,6 +29,9 @@ bool FileHandler::sendEncryptedFile(string fileFullPath, uint8_t* clientUUID)
 	return true;
 }
 
+/*
+	Validates the file that will be sent. Returns the file size if valid, 0 otherwise
+*/
 uint32_t FileHandler::validateFileToSend(string fileFullPath)
 {
 	if (!FileUtils::doesFileExist(fileFullPath))
@@ -49,6 +58,9 @@ uint32_t FileHandler::validateFileToSend(string fileFullPath)
 	return fileSize;
 }
 
+/*
+	Reads content from a file
+*/
 uint8_t* FileHandler::readDataFromFile(string fileFullPath)
 {
 	if (!FileUtils::doesFileExist(fileFullPath))
@@ -85,6 +97,9 @@ uint8_t* FileHandler::readDataFromFile(string fileFullPath)
 	return dataFromFileToSend;
 }
 
+/*
+	Calculated checksum (CRC) of a given file content
+*/
 uint32_t FileHandler::calculateFileCRC(string fileFullPath)
 {
 	size_t fileSize = validateFileToSend(fileFullPath);

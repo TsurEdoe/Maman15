@@ -16,15 +16,6 @@ bool FileUtils::fileRequestOpen(const string& filePathStr, fstream& fs, bool wri
 		{
 			return false;
 		}
-
-		path filePath(filePathStr);
-		path parentFolderPath = filePath.parent_path();
-
-		if (!exists(parentFolderPath)) 
-		{
-			// create directories within the path if they are do not exist.
-			(void)create_directories(parentFolderPath);
-		}
 		
 		const auto flags = write ? (fstream::binary | fstream::out) : (fstream::binary | fstream::in);
 		fs.open(filePathStr, flags);

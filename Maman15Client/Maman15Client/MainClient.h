@@ -22,6 +22,8 @@ private:
     EncryptionHandler* _encryptionHandler;
     FileHandler* _fileHandler;
     bool sendFileToServer(string fileFullPath);
+    uint32_t getServerCalculatedCRC();
+    bool handleCRCValidation(uint32_t serverCalculatedCRC, uint32_t clientCalculatedCRC);
 
 public:
     MainClient(ClientSocketHandler* clientSocketHandler, RSAWrapper* rsaWrapper, uint8_t* clientUUID, string userName);

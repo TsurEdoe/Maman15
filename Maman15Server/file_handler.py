@@ -1,7 +1,7 @@
 import logging
 import zlib
 import os
-from utils import SERVER_FILES_ROOT_DIRECTORY
+from consts import SERVER_FILES_ROOT_DIRECTORY
 
 """
     Singelton class used to handle file operation on the file server

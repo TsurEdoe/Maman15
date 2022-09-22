@@ -1,7 +1,13 @@
 #include "RegistrationHandler.h"
 
+/*
+    C'tor
+*/
 RegistrationHandler::RegistrationHandler(ClientSocketHandler* clientSocketHandler) : _clientSocketHandler{ clientSocketHandler } {}
 
+/*
+    Registers a client with the server by sending a registration request
+*/
 bool RegistrationHandler::registerClient(string clientUserName, uint8_t* clientUUIDBuffer)
 {
     uint8_t buffer[PACKET_SIZE];

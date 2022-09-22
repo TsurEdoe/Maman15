@@ -1,5 +1,8 @@
 #include "RSAWrapper.h"
 
+/*
+	C'tor - Generates the key pair randomly
+*/
 RSAWrapper::RSAWrapper()
 {
 	_privateKey.Initialize(_rng, BITS);
@@ -10,6 +13,9 @@ RSAWrapper::RSAWrapper()
 	_publicKey.Save(ss);
 }
 
+/*
+	C'tor - Receives the private key by argument
+*/
 RSAWrapper::RSAWrapper(const std::string& privateKey)
 {
 	CryptoPP::StringSource ss(privateKey, true);
@@ -21,10 +27,9 @@ RSAWrapper::RSAWrapper(const std::string& privateKey)
 	_publicKey.Save(ssPublic);
 }
 
-RSAWrapper::~RSAWrapper()
-{
-}
-
+/*
+	Getter - returns the private key
+*/
 std::string RSAWrapper::getPrivateKey() const
 {
 	std::string key;
@@ -33,6 +38,9 @@ std::string RSAWrapper::getPrivateKey() const
 	return key;
 }
 
+/*
+	Getter - returns the private key
+*/
 char* RSAWrapper::getPrivateKey(char* keyout, unsigned int length) const
 {
 	CryptoPP::ArraySink as(reinterpret_cast<CryptoPP::byte*>(keyout), length);
@@ -40,6 +48,9 @@ char* RSAWrapper::getPrivateKey(char* keyout, unsigned int length) const
 	return keyout;
 }
 
+/*
+	Getter - returns the public key
+*/
 std::string RSAWrapper::getPublicKey() const
 {
 	std::string key;
@@ -48,6 +59,9 @@ std::string RSAWrapper::getPublicKey() const
 	return key;
 }
 
+/*
+	Getter - returns the public key
+*/
 char* RSAWrapper::getPublicKey(char* keyout, unsigned int length) const
 {
 	CryptoPP::ArraySink as(reinterpret_cast<CryptoPP::byte*>(keyout), length);
@@ -55,6 +69,9 @@ char* RSAWrapper::getPublicKey(char* keyout, unsigned int length) const
 	return keyout;
 }
 
+/*
+	Decrypts the data received using the private RSA key
+*/
 std::string RSAWrapper::decrypt(const std::string& cipher)
 {
 	std::string decrypted;
@@ -63,6 +80,9 @@ std::string RSAWrapper::decrypt(const std::string& cipher)
 	return decrypted;
 }
 
+/*
+	Decrypts the data received using the private RSA key
+*/
 std::string RSAWrapper::decrypt(const char* cipher, unsigned int length)
 {
 	std::string decrypted;
@@ -71,6 +91,9 @@ std::string RSAWrapper::decrypt(const char* cipher, unsigned int length)
 	return decrypted;
 }
 
+/*
+	Encrypts the data received using the public RSA key
+*/
 std::string RSAWrapper::encrypt(const std::string& plain)
 {
 	std::string cipher;
@@ -79,6 +102,9 @@ std::string RSAWrapper::encrypt(const std::string& plain)
 	return cipher;
 }
 
+/*
+	Encrypts the data received using the public RSA key
+*/
 std::string RSAWrapper::encrypt(const char* plain, unsigned int length)
 {
 	std::string cipher;

@@ -21,7 +21,6 @@ private:
 public:
 	RSAWrapper();
 	RSAWrapper(const std::string& privateKey);
-	~RSAWrapper();
 
 	std::string getPrivateKey() const;
 	char* getPrivateKey(char* keyout, unsigned int length) const;

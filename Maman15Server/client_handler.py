@@ -1,4 +1,5 @@
-import threading, logging
+import threading
+import logging
 from crypto_handler import CryptoHandler
 from database import ServerDatabase
 from file_handler import FileHandler
