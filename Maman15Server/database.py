@@ -22,7 +22,10 @@ class ServerDatabase:
             self.__cursor = self.__db.cursor()
             self.db_write_lock = threading.Lock()
             ServerDatabase.__instance = self
-            self.__initialize_tables()
+            try:
+                self.__initialize_tables()
+            except sqlite3.OperationalError :
+                logging.info("Tables already initialized")
             sqlite3.register_adapter(uuid.UUID, lambda u: u.bytes_le)
         
     """
@@ -46,7 +49,7 @@ class ServerDatabase:
             id integer primary key autoincrement, 
             file_name varchar(255), 
             path_name varchar(255),
-            FOREIGN KEY(client_id) REFERENCES clients(id)
+            FOREIGN KEY(client_id) REFERENCES clients(id),
             verified boolean)
             """)
         self.db_write_lock.release()

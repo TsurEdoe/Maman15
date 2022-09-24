@@ -3,10 +3,17 @@
 /*
 	C'tor
 */
-ClientSocketHandler::ClientSocketHandler(std::string ip, uint16_t port) : _ip(ip), _port(port)
+ClientSocketHandler::ClientSocketHandler(std::string ip, uint16_t port)
 {
-	io_service io_service;
-	this->_sock = new tcp::socket(io_service);
+	_sock = new tcp::socket(_ioService);
+	try
+	{
+		_sock->connect(tcp::endpoint(ip::address::from_string(ip), port));
+	}
+	catch (exception e)
+	{
+		cout << "ERROR: Failed connection to server: " << e.what() << endl;
+	}
 }
 
 /*
@@ -14,24 +21,15 @@ ClientSocketHandler::ClientSocketHandler(std::string ip, uint16_t port) : _ip(ip
 */
 ClientSocketHandler::~ClientSocketHandler()
 {
-	this->_sock->close();
+	_sock->close();
 }
 
 /*
-	Connects the socket to the server
+	Returns the socket conncection to the server status 
 */
-bool ClientSocketHandler::connect()
+bool ClientSocketHandler::isConnected()
 {
-	try
-	{
-		_sock->connect(tcp::endpoint(ip::address::from_string(_ip), _port));
-	}
-	catch (exception e)
-	{
-		cout << "ERROR: Failed connection to server: " << e.what() << endl;
-		return false;
-	}
-	return true;
+	return _sock->is_open();
 }
 
 /*
@@ -46,8 +44,9 @@ bool ClientSocketHandler::receive(uint8_t(&buffer)[PACKET_SIZE])
 		(void) read(_sock, boost::asio::buffer(buffer, PACKET_SIZE));
 		return true;
 	}
-	catch(boost::system::system_error&)
+	catch(boost::system::system_error& e)
 	{
+		cout << "ClientSocketHandler - Failed receiving data: " << e.what() << endl;
 		return false;
 	}
 }
@@ -64,8 +63,9 @@ bool ClientSocketHandler::send(const uint8_t(&buffer)[PACKET_SIZE])
 		(void) write(_sock, boost::asio::buffer(buffer, PACKET_SIZE));
 		return true;
 	}
-	catch (boost::system::system_error&)
+	catch (boost::system::system_error& e)
 	{
+		cout << "ClientSocketHandler - Failed sending data: " << e.what() << endl;
 		return false;
 	}
 }

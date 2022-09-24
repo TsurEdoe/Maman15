@@ -96,6 +96,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\boost_1_79_0;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,6 +133,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\boost_1_79_0;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

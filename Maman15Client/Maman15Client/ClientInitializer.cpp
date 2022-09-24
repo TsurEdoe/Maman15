@@ -90,9 +90,9 @@ bool ClientInitializer::initializeClient()
 	else
 	{
 		cout << CLIENT_CONNECTION_INFO_FILE << " not found, going to registration." << endl;
-		_registrationHandler->registerClient(this->_userName, _clientUUID);
+		bool registrationResult = _registrationHandler->registerClient(this->_userName, _clientUUID);
 
-		if (this->_clientUUID == NULL)
+		if (!registrationResult || this->_clientUUID == NULL)
 		{
 			cout << "Error initializng client, failed registering with server" << endl;
 			return false;
@@ -159,7 +159,7 @@ vector<string> ClientInitializer::readInformationFile(string fileFullPath)
 	
 	string lastLine = fileInformation[fileInformation.size() - 1];
 	// Remove last empty line
-	if (lastLine.empty() == 0)
+	if (lastLine.size() == 0)
 	{
 		fileInformation.pop_back();
 	}
@@ -210,7 +210,7 @@ bool ClientInitializer::getTransferInformation()
 
 	if (transferInformation.size() != 3)
 	{
-		cout << "ERROR: Connecting to server, transfer information not is in wrong pattern" << endl;
+		cout << "ERROR: ClientInitializer - Connecting to server, transfer information not is in wrong pattern" << endl;
 		return false;
 	}
 
@@ -219,7 +219,7 @@ bool ClientInitializer::getTransferInformation()
 
 	if (serverInformation.size() != 2)
 	{
-		cout << "ERROR: Connecting to server, server connection information is in wrong pattern" << endl;
+		cout << "ERROR: ClientInitializer - Connecting to server, server connection information is in wrong pattern" << endl;
 		return false;
 	}
 
@@ -231,21 +231,22 @@ bool ClientInitializer::getTransferInformation()
 	}
 	catch(exception e)
 	{
-		cout << "ERROR: Connecting to server, given port is not a number" << e.what() << endl;
+		cout << "ERROR: ClientInitializer - Connecting to server, given port is not a number" << e.what() << endl;
 		return false;
 	}
 
 	// Server information is IP:PORT
 	this->_clientSocketHandler = new ClientSocketHandler(serverInformation[0], port);
 
-	if (!this->_clientSocketHandler->connect())
+	if (!this->_clientSocketHandler->isConnected())
 	{
+		cout << "ERROR: ClientInitializer - Connecting to server, socket wasn't opened" << endl;
 		return false;
 	}
 
-	this->_userName = serverInformation[1];
-	this->_fileFullPath = serverInformation[2];
+	this->_userName = transferInformation[1];
+	this->_fileFullPath = transferInformation[2];
 
-	cout << "SUCCESS: Transfer information read successfully!" << endl;
+	cout << "SUCCESS: ClientInitializer - Transfer information read successfully!" << endl;
 	return true;
 }

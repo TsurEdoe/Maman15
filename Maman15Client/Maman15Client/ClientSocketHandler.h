@@ -17,13 +17,12 @@ using ip::tcp;
 class ClientSocketHandler
 {
 private:
+	io_service _ioService;
 	tcp::socket* _sock;
-	string _ip;
-	uint16_t _port;
 public:
 	ClientSocketHandler(std::string ip, uint16_t port);
 	~ClientSocketHandler();
-	bool connect();
+	bool isConnected();
 	bool receive(uint8_t (&buffer)[PACKET_SIZE]);
 	bool send(const uint8_t(&buffer)[PACKET_SIZE]);
 };

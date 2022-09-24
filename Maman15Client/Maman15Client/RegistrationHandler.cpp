@@ -15,19 +15,20 @@ bool RegistrationHandler::registerClient(string clientUserName, uint8_t* clientU
 
     ClientRequest registrationRequest(clientUUIDBuffer, ClientRequest::CLIENT_REGISTRATION, clientUserName.size(), (uint8_t*)clientUserName.c_str());
     registrationRequest.serializeIntoBuffer(buffer);
+    cout << "RegistrationHandler - Sending registration request to server" << endl;
 
     if (!_clientSocketHandler->send(buffer))
     {
         cout << "ERROR: RegistrationHandler - Request sending on socket failed!" << endl;
-        return NULL;
+        return false;
     }
 
     memset(buffer, 0, PACKET_SIZE);
-
+    cout << "RegistrationHandler - Receiving registration response from server" << endl;
     if (!_clientSocketHandler->receive(buffer))
     {
         cout << "ERROR: RegistrationHandler - Failed to receive registration response from server!" << endl;
-        return NULL;
+        return false;
     }
 
     ServerResponse registrationRespone(buffer, sizeof(ServerResponse::ServerResponseHeader) + UUID_LENGTH);

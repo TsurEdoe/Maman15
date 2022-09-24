@@ -21,10 +21,10 @@ class ClientConnectionHandler:
 
             while True:
                 client_socket, client_address = self.__server_socket.accept()  
-                logging.info("Connected to :", client_address[0], ":", client_address[1])
-                self.client_handler.handle_new_client(client_socket, client_address)
-        except Exception:
-            logging.error("Failed accepting connectins from client, closing all sockets...")
+                logging.info("Connected to {0}:{1}".format(client_address[0],client_address))
+                self.handle_new_client(client_socket, client_address)
+        except Exception as exception:
+            logging.error("Failed accepting connections: {0}. \nClosing all sockets...".format(exception))
             self.stop()
     
     def stop(self):
@@ -34,4 +34,5 @@ class ClientConnectionHandler:
     
     def handle_new_client(self, client_socket, client_address):
         client_handler = ClientHandler(client_socket, client_address)
+        client_handler.run()
         self.__client_connection_map[client_address] = client_handler
