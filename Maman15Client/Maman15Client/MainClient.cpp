@@ -58,6 +58,8 @@ bool MainClient::sendFileToServer(string fileName)
         return true;
     }
 
+    cout << "Wrong CRC calculated for file " << fileName << " by server, resending file" << endl;
+
     // CRC Incorrect, resending
     ClientRequest crcClientResponseToServer(_clientUUID, ClientRequest::RequestCode::FILE_CRC_FAILED_RESENDING, 0, NULL);
     crcClientResponseToServer.serializeIntoBuffer(buffer);
@@ -65,9 +67,9 @@ bool MainClient::sendFileToServer(string fileName)
     _clientSocketHandler->send(buffer, crcClientResponseToServer.sizeWithPayload());
 
     memset(buffer, 0, PACKET_SIZE);
-    _clientSocketHandler->receive(buffer, sizeof(ServerResponse::ServerResponseHeader));
+    _clientSocketHandler->receive(buffer, sizeof(ServerResponse::ServerResponseHeader) + sizeof(uint32_t));
 
-    ServerResponse crcFailedResponse(buffer, sizeof(ServerResponse::ServerResponseHeader));
+    ServerResponse crcFailedResponse(buffer, sizeof(ServerResponse::ServerResponseHeader) + sizeof(uint32_t));
     if (crcFailedResponse.header._code == ServerResponse::ResponseType::REQUEST_RECEIVED)
     {
         return false;
@@ -149,19 +151,24 @@ bool MainClient::runClient(string fileName)
             return true;
         }
 
-        cout << "Resending file due to bad CRC calculation" << endl;
+        if (i < MAX_RETRIES_FILE_RESEND)
+        {
+            cout << "Resending file due to bad CRC calculation" << endl;
+        }
     }
 
-    // CRC Incorrect, resending
+    cout << "Failed sending FILE_CRC_FAILED_FINISHED message to server" << endl;
+
+    // CRC Incorrect after max times, finishing
     ClientRequest crcClientResponseToServer(_clientUUID, ClientRequest::RequestCode::FILE_CRC_FAILED_FINISHED, 0, NULL);
     crcClientResponseToServer.serializeIntoBuffer(buffer);
 
     _clientSocketHandler->send(buffer, crcClientResponseToServer.sizeWithPayload());
 
     memset(buffer, 0, PACKET_SIZE);
-    _clientSocketHandler->receive(buffer, sizeof(ServerResponse::ServerResponseHeader));
+    _clientSocketHandler->receive(buffer, sizeof(ServerResponse::ServerResponseHeader) + sizeof(uint32_t));
 
-    ServerResponse crcFinalFailedResponse(buffer, sizeof(ServerResponse::ServerResponseHeader));
+    ServerResponse crcFinalFailedResponse(buffer, sizeof(ServerResponse::ServerResponseHeader) + sizeof(uint32_t));
     if (crcFinalFailedResponse.header._code != ServerResponse::ResponseType::REQUEST_RECEIVED)
     {
         cout << "Failed sending FILE_CRC_FAILED_FINISHED message to server: Got bad response type (" << crcFinalFailedResponse.header._code << ")" << endl;

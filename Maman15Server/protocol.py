@@ -2,6 +2,8 @@ import logging
 import struct
 from enum import Enum
 
+"""Protocol Consts"""
+
 PACKET_SIZE = 1024
 SERVER_VERSION = 3
 CLIENT_PUBLIC_KEY_FIELD_LENGTH = 160
@@ -16,6 +18,7 @@ CHECKSUM_FIELD_LENGTH = 4
 
 
 class ResponseType(Enum):
+    """All the different server response types defined by the protocol"""
     DEFAULT_RESPONSE_TYPE = 0
     REGISTRATION_SUCCESS = 2100
     CLIENT_AES_KEY = 2102
@@ -24,6 +27,7 @@ class ResponseType(Enum):
 
 
 class RequestType(Enum):
+    """All the different client requests types defined by the protocol"""
     DEFAULT_REQUEST_TYPE = 0
     CLIENT_REGISTRATION = 1100
     CLIENT_PUBLIC_KEY = 1101
@@ -87,7 +91,7 @@ class ClientRequest:
         return CLIENT_ID_FIELD_LENGTH + CLIENT_VERSION_FIELD_LENGTH + CODE_FIELD_LENGTH + PAYLOAD_SIZE_FIELD_LENGTH
 
     def receive_payload(self, socket_to_receive_from):
-        # Helper function to recv n bytes or return None if EOF is hit
+        """Helper function to recv n bytes or return None if EOF is hit"""
         data = bytearray()
         while len(data) < self.payload.size:
             packet = socket_to_receive_from.recv(self.payload.size - len(data))

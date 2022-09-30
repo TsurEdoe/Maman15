@@ -1,34 +1,36 @@
-import logging, sqlite3, threading, uuid 
+import logging
+import sqlite3
+import threading
+import uuid
+
 from consts import SERVER_DB_FILE_NAME
 
-"""
-    Singleton class used for handling all DB operations (create, insert, update)
-"""
+
 class ServerDatabase:
+    """Singleton class used for handling all DB operations (create, insert, update)"""
     __instance = None
-    @staticmethod 
-    def getInstance():
+
+    @staticmethod
+    def get_instance():
         """ Static access method. """
-        if ServerDatabase.__instance == None:
+        if ServerDatabase.__instance is None:
             ServerDatabase()
         return ServerDatabase.__instance
-    
+
     def __init__(self):
         """ Virtually private constructor. """
-        if ServerDatabase.__instance != None:
+        if ServerDatabase.__instance is not None:
             raise Exception("This class is a singleton!")
         else:
-            self.__db = sqlite3.connect(SERVER_DB_FILE_NAME)
+            self.__db = sqlite3.connect(SERVER_DB_FILE_NAME, check_same_thread=False)
             self.__cursor = self.__db.cursor()
             self.db_write_lock = threading.Lock()
             ServerDatabase.__instance = self
             self.__initialize_tables()
             sqlite3.register_adapter(uuid.UUID, lambda u: u.bytes_le)
-        
-    """
-        Initializes the needed table for the server operation (clients and file table)
-    """
+
     def __initialize_tables(self):
+        """Initializes the needed table for the server operation (clients and file table)"""
         logging.info("Creating the clients' table")
         with self.db_write_lock:
             try:
@@ -47,7 +49,6 @@ class ServerDatabase:
             try:
                 self.__cursor.execute(
                     """CREATE TABLE files (
-                    id integer primary key autoincrement, 
                     file_name varchar(255), 
                     file_path varchar(255),
                     client_id integer,
@@ -56,9 +57,11 @@ class ServerDatabase:
                     """)
             except sqlite3.OperationalError as e:
                 logging.warn("Failed initializing table files: {0}".format(e))
+
     """
         Updated last seen 
     """
+
     def __update_last_seen(self, client_id):
         with self.db_write_lock:
             self.__cursor.execute(
@@ -72,6 +75,7 @@ class ServerDatabase:
         Registers a new client into the DB (clients table). Adds only the name.
         Also updates last seen field for appropriate client
     """
+
     def register_new_client(self, client_name):
         try:
             client_uuid = uuid.uuid4()
@@ -90,11 +94,9 @@ class ServerDatabase:
         self.__update_last_seen(client_uuid)
         return client_uuid
 
-    """
-        Adds the client public key and the client server shared aes key to the appropriate entry in the clients table.
-        Also updates last seen field for appropriate client
-    """
     def add_client_key_to_db(self, client_id, client_public_key, client_server_shared_key):
+        """Adds the client public key and the client server shared aes key to the appropriate entry in the clients table.
+                Also updates last seen field for appropriate client"""
         with self.db_write_lock:
             self.__cursor.execute(
                 """UPDATE clients set 
@@ -104,11 +106,9 @@ class ServerDatabase:
         self.__update_last_seen(client_id)
         logging.info("Added client's with uuid {0} keys to the databse".format(client_id))
 
-    """
-        Registers a new file into the DB (files table). Adds only the name, path, and client id
-        Also updates last seen field for appropriate client
-    """
     def register_new_file(self, encrypted_file_name, encrypted_file_path, client_id):
+        """Registers a new file into the DB (files table). Adds only the name, path, and client id.
+           Also updates last seen field for appropriate client"""
         try:
             with self.db_write_lock:
                 self.__cursor.execute(
@@ -116,26 +116,22 @@ class ServerDatabase:
                     file_name, file_path, client_id, verified)
                     VALUES(?, ?, ?, FALSE)
                     """, [encrypted_file_name, encrypted_file_path, client_id])
-                file_uuid = self.__cursor.lastrowid
         except Exception as e:
             logging.error("Failed registering file {0}: {1}".format(encrypted_file_name, e))
-            return -1
-        
-        self.__update_last_seen(client_id)
-        logging.info("Added file {0} to databse with uuid {1}".format(encrypted_file_name, file_uuid))
-        return file_uuid
+            return False
 
-    """
-        Sets the verified flag on the appropriate file.
-        Also updates last seen field for appropriate client
-    """
-    def set_file_verified(self, file_id, client_id):
+        self.__update_last_seen(client_id)
+        logging.info("Added file {0} to database with client_id {1}".format(encrypted_file_name, client_id))
+        return True
+
+    def set_file_verified(self, file_name, client_id):
+        """Sets the verified flag on the appropriate file. Also updates last seen field for appropriate client"""
         with self.db_write_lock:
             self.__cursor.execute(
                 """UPDATE files set 
                 verified = TRUE
-                WHERE id = ?
-                """, [file_id])
+                WHERE (client_id = ? and file_name = ?)
+                """, [client_id, file_name])
 
         self.__update_last_seen(client_id)
-        logging.info("Set file verified with uuid {0}".format(file_id))
+        logging.info("Set file verified for {0} with client_id {1}".format(file_name, client_id))

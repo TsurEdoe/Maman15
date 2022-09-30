@@ -1,28 +1,19 @@
 import logging
 import zlib
 import os
-from consts import SERVER_FILES_ROOT_DIRECTORY
-
-"""
-    Singelton class used to handle file operation on the file server
-"""
 
 
 class FileHandler:
-    """
-        Calculated CRC checksum for given data
-    """
+    """Singleton class used to handle file operation on the file server"""
 
     @staticmethod
     def calculate_crc(data):
+        """Calculated CRC checksum for given data"""
         return zlib.crc32(data)
-
-    """
-        Saves the given file data info a local directory with the given file name and given subpath
-    """
 
     @staticmethod
     def save_file(file_data, file_path):
+        """Saves the given file data info a local directory with the given file name and given sub-path"""
         try:
             try:
                 os.mkdir(os.path.dirname(file_path))

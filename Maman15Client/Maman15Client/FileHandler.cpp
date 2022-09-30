@@ -11,8 +11,6 @@ FileHandler::FileHandler(EncryptionHandler* encryptionHandler, ClientSocketHandl
 */
 bool FileHandler::sendEncryptedFile(string fileName, uint8_t* clientUUID)
 {
-	uint8_t buffer[PACKET_SIZE];
-
 	string paddedFileName = fileName;
 	EncryptionHandler::padStringWithZeroes(paddedFileName, FILE_NAME_FIELD_SIZE);
 
@@ -54,6 +52,9 @@ bool FileHandler::sendEncryptedFile(string fileName, uint8_t* clientUUID)
 	memcpy(payload + UUID_LENGTH + FILE_CONTENT_FIELD_SIZE + FILE_NAME_FIELD_SIZE, encryptedFileData.c_str(), fileSize);
 
 	ClientRequest sendEncryptedDataToServer(clientUUID, ClientRequest::CLIENT_ENCRYPTED_FILE, dataToSendPlainSize + fileSize, payload);
+	
+	uint8_t* buffer = new uint8_t[sendEncryptedDataToServer.sizeWithPayload()];
+	
 	sendEncryptedDataToServer.serializeIntoBuffer(buffer);
 
 	bool sendResult = _clientSocketHandler->send(buffer, sendEncryptedDataToServer.sizeWithPayload());
@@ -62,6 +63,8 @@ bool FileHandler::sendEncryptedFile(string fileName, uint8_t* clientUUID)
 
 	delete[] payload;
 	payload = NULL;
+	delete[] buffer;
+	buffer = NULL;
 	
 	return true;
 }

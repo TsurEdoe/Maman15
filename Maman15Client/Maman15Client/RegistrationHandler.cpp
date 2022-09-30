@@ -36,7 +36,7 @@ bool RegistrationHandler::registerClient(string clientUserName, uint8_t* clientU
     if (registrationRespone.header._code == ServerResponse::REGISTRATION_SUCCESS)
     {
         memcpy((void*)clientUUIDBuffer, (void*)registrationRespone.payload.payload, (size_t)UUID_LENGTH);
-        cout << "RegistrationHandler - Registration succefull, got uuid " << clientUUIDBuffer << " from server" << endl;
+        cout << "RegistrationHandler - Registration successful wtih server" << endl;
         
         return true;
     }

@@ -113,7 +113,7 @@ bool ClientInitializer::initializeClient()
 		
 		// Writing client information into me.info file
 		fstream fs;
-		/*if (!FileUtils::fileRequestOpen(CLIENT_CONNECTION_INFO_FILE, fs, true))
+		if (!FileUtils::fileRequestOpen(CLIENT_CONNECTION_INFO_FILE, fs, true))
 		{
 			cout << "ERROR: Connecting to server, file " << CLIENT_CONNECTION_INFO_FILE << " failed to open." << endl;
 			return false;
@@ -124,7 +124,7 @@ bool ClientInitializer::initializeClient()
 			cout << "ERROR: Connecting to server, file " << CLIENT_CONNECTION_INFO_FILE << " failed to be read." << endl;
 			FileUtils::closeFile(fs);
 			return false;
-		}*/
+		}
 		
 		cout << "Wrote client connection information successfully." << endl;
 		FileUtils::closeFile(fs);

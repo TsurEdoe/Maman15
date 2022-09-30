@@ -24,6 +24,6 @@ public:
 	~ClientSocketHandler();
 	bool isConnected();
 	bool receive(uint8_t (&buffer)[PACKET_SIZE], size_t bytesToReceive);
-	bool send(const uint8_t(&buffer)[PACKET_SIZE], size_t bytesToSend);
+	bool send(const uint8_t* buffer, size_t bytesToSend);
 };
 

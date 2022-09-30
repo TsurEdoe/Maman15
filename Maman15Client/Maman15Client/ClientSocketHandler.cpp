@@ -48,7 +48,7 @@ bool ClientSocketHandler::receive(uint8_t(&buffer)[PACKET_SIZE], size_t bytesToR
 /*
    Send (blocking) PACKET_SIZE bytes to socket. Returns true if successfuly sent. false otherwise.
  */
-bool ClientSocketHandler::send(const uint8_t(&buffer)[PACKET_SIZE], size_t bytesToSend)
+bool ClientSocketHandler::send(const uint8_t* buffer, size_t bytesToSend)
 {
 	try
 	{

@@ -85,6 +85,9 @@ string EncryptionHandler::encryptedFileData(uint8_t* dataToEncrypt, uint32_t dat
     return this->_aesWrapper->encrypt((char*)dataToEncrypt, dataToEncryptLength);
 }
 
+/*
+    Pads the given string to a wanted length with zeroes
+*/
 void EncryptionHandler::padStringWithZeroes(string& strToPad, uint32_t wantedSize)
 {
     if (strToPad.size() < wantedSize)
