@@ -42,13 +42,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -131,7 +131,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\boost_1_79_0;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\boost_1_79_0;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\cryptopp870</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <Optimization>Disabled</Optimization>
     </ClCompile>
@@ -141,7 +141,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>cryptlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\boost_1_79_0\bin\x64\lib;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\cryptopp870\x64\Output\Release;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\boost_1_79_0\bin\x64\lib;C:\Users\tsure\Documents\לימודים\תכנות מערכות דפנסיבי\ממן 15\Maman15\Maman15Client\cryptopp870\x64\Output\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

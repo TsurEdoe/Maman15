@@ -8,7 +8,7 @@ std::string Base64Wrapper::encode(const std::string& str)
 	std::string encoded;
 	CryptoPP::StringSource ss(str, true,
 		new CryptoPP::Base64Encoder(
-			new CryptoPP::StringSink(encoded)
+			new CryptoPP::StringSink(encoded), false
 		) // Base64Encoder
 	); // StringSource
 
@@ -28,4 +28,18 @@ std::string Base64Wrapper::decode(const std::string& str)
 	); // StringSource
 
 	return decoded;
+}
+
+std::string Base64Wrapper::hex(const std::vector<uint8_t>& v)
+{
+	std::string to;
+	boost::algorithm::hex(v.begin(), v.end(), std::back_inserter(to));
+	return to;
+}
+
+std::vector<uint8_t> Base64Wrapper::unhex(const std::string& hex)
+{
+	std::vector<uint8_t> bytes;
+	boost::algorithm::unhex(hex, std::back_inserter(bytes));
+	return bytes;
 }

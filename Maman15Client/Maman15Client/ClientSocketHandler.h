@@ -23,7 +23,7 @@ public:
 	ClientSocketHandler(std::string ip, uint16_t port);
 	~ClientSocketHandler();
 	bool isConnected();
-	bool receive(uint8_t (&buffer)[PACKET_SIZE]);
-	bool send(const uint8_t(&buffer)[PACKET_SIZE]);
+	bool receive(uint8_t (&buffer)[PACKET_SIZE], size_t bytesToReceive);
+	bool send(const uint8_t(&buffer)[PACKET_SIZE], size_t bytesToSend);
 };
 

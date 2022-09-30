@@ -15,11 +15,14 @@ bool EncryptionHandler::sendPublicKeyToServer(uint8_t* clientUUID, string userNa
     memset(buffer, 0, PACKET_SIZE);
 
     string publicKey = this->_rsaWrapper->getPublicKey();
+
+    EncryptionHandler::padStringWithZeroes(userName, USER_NAME_SIZE);
+    string requestPayload = userName + publicKey;
     
-    ClientRequest sendPublicKeyRequest(clientUUID, ClientRequest::CLIENT_PUBLIC_KEY, userName.size(), (uint8_t*)userName.c_str());
+    ClientRequest sendPublicKeyRequest(clientUUID, ClientRequest::CLIENT_PUBLIC_KEY, requestPayload.size(), (uint8_t*)(requestPayload).c_str());
     sendPublicKeyRequest.serializeIntoBuffer(buffer);
 
-    return _clientSocketHandler->send(buffer);
+    return _clientSocketHandler->send(buffer, sendPublicKeyRequest.sizeWithPayload());
 }
 
 /*
@@ -31,25 +34,37 @@ bool EncryptionHandler::receiveSharedSecret()
     uint8_t buffer[PACKET_SIZE];
     memset(buffer, 0, PACKET_SIZE);
 
-    if (!_clientSocketHandler->receive(buffer))
+    cout << "EncryptionHandler - Receiving shared key from server" << endl;
+
+    if (!_clientSocketHandler->receive(buffer, sizeof(ServerResponse::ServerResponseHeader) + sizeof(uint32_t) + UUID_LENGTH + ENCRYPTED_SHARED_KEY_LENGTH))
     {
-        cout << "ERROR: RegistrationHandler - Failed to receive registration response from server!" << endl;
+        cout << "ERROR: EncryptionHandler - Failed to receive shared key from server!" << endl;
         return NULL;
     }
 
-    ServerResponse sharedKeyResponse(buffer, sizeof(ServerResponse::ServerResponseHeader) + UUID_LENGTH);
+    ServerResponse sharedKeyResponse(buffer, sizeof(ServerResponse::ServerResponseHeader) + sizeof(uint32_t) + UUID_LENGTH + ENCRYPTED_SHARED_KEY_LENGTH);
 
     if (sharedKeyResponse.header._code == ServerResponse::CLIENT_AES_KEY)
     {
-        string decrypteSharedKey = _rsaWrapper->decrypt((const char*)sharedKeyResponse.payload.payload, sharedKeyResponse.payload.size);
-        _aesWrapper = new AESWrapper((const unsigned char*)decrypteSharedKey.c_str(), decrypteSharedKey.size());
-
-        cout << "Initialized encryption handler successfully" << endl;
+        unsigned char* encryptedSharedKey = (unsigned char*)(sharedKeyResponse.payload.payload + UUID_LENGTH);
+        
+        try
+        {
+            string decrypteSharedKey = _rsaWrapper->decrypt((char*)encryptedSharedKey, ENCRYPTED_SHARED_KEY_LENGTH);
+            
+            _aesWrapper = new AESWrapper((const unsigned char*)decrypteSharedKey.c_str(), decrypteSharedKey.size());
+        }
+        catch (exception e)
+        {
+            cout << "ERROR - EncryptionHandler: Failed decrypting received shared key " << e.what() << endl;
+            return false;
+        }
+        cout << "EncryptionHandler - Initialized encryption handler successfully" << endl;
         
         return true;
     }
 
-    cout << "Failed initizlizing encryption handler, bad response " << sharedKeyResponse.header._code << " type received from server" << endl;
+    cout << "ERROR: EncryptionHandler - Failed initizlizing encryption handler, bad response " << sharedKeyResponse.header._code << " type received from server" << endl;
 
     return false;
 }
@@ -63,23 +78,17 @@ bool EncryptionHandler::initializeHandler(uint8_t* clientUUID, string userName)
 }
 
 /*
-    Sends anencrypted data message to the server with the wanted request code
+    Encrypts a given file and returns the encrypted data
 */
-bool EncryptionHandler::sendEncryptedFileData(uint8_t* plainDataToSend, uint32_t sizeOfDataToSend, 
-    uint8_t* clientUUID, ClientRequest::RequestCode requestCode)
+string EncryptionHandler::encryptedFileData(uint8_t* dataToEncrypt, uint32_t dataToEncryptLength)
 {
-    uint8_t buffer[PACKET_SIZE];
-    memset(buffer, 0, PACKET_SIZE);
+    return this->_aesWrapper->encrypt((char*)dataToEncrypt, dataToEncryptLength);
+}
 
-    string encryptedData = this->_aesWrapper->encrypt((char*)plainDataToSend, sizeOfDataToSend);
-    
-    ClientRequest sendEncryptedDataToServer;
-    
-    memcpy(sendEncryptedDataToServer._clientId, clientUUID, UUID_LENGTH);
-    sendEncryptedDataToServer._code = requestCode;
-    memcpy(sendEncryptedDataToServer._payload.payload, encryptedData.c_str(), encryptedData.size());
-
-    sendEncryptedDataToServer.serializeIntoBuffer(buffer);
-
-    return _clientSocketHandler->send(buffer);
+void EncryptionHandler::padStringWithZeroes(string& strToPad, uint32_t wantedSize)
+{
+    if (strToPad.size() < wantedSize)
+    {
+        strToPad.insert(strToPad.size(), wantedSize - strToPad.size(), 0);
+    }
 }

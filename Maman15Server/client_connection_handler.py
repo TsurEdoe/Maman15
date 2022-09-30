@@ -20,9 +20,13 @@ class ClientConnectionHandler:
             logging.info("Socket listening for new client connections...")
 
             while True:
-                client_socket, client_address = self.__server_socket.accept()  
-                logging.info("Connected to {0}:{1}".format(client_address[0],client_address))
-                self.handle_new_client(client_socket, client_address)
+                try:
+                    client_socket, client_address = self.__server_socket.accept()
+                    logging.info("Connected to {0}:{1}".format(client_address[0], client_address))
+                    self.handle_new_client(client_socket, client_address)
+                except Exception as exception:
+                    logging.error("Failed handling client {0}: {1}".format(client_address, exception))
+                    continue
         except Exception as exception:
             logging.error("Failed accepting connections: {0}. \nClosing all sockets...".format(exception))
             self.stop()

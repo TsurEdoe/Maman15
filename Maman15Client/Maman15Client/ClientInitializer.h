@@ -12,6 +12,7 @@
 #define TRANSFER_INFO_FILE			"transfer.info"
 #define CLIENT_CONNECTION_INFO_FILE "me.info"
 #define FILE_BUFFER_SIZE			1024
+
 using namespace std;
 
 /*
@@ -27,14 +28,14 @@ private:
 	ClientSocketHandler* _clientSocketHandler;
 	RegistrationHandler* _registrationHandler;
 	string _userName;
-	string _fileFullPath;
+	string _fileName;
 	uint8_t _clientUUID[UUID_LENGTH] = { 0 };
 	RSAWrapper* _rsaWrapper;
 
 	bool getTransferInformation();
 	bool getClientConnectionInfo();
 	
-	static vector<string> readInformationFile(string fileFullPath);
+	static vector<string> readInformationFile(string fileName);
 public:
 	ClientInitializer();
 	~ClientInitializer();
@@ -42,7 +43,7 @@ public:
 	bool initializeClient();
 
 	string getUserName();
-	string getFileFullPath();
+	string getFileName();
 	uint8_t* getClientUUID();
 	ClientSocketHandler* getClientSocketHandler();
 	RSAWrapper* getRSAWrapper();

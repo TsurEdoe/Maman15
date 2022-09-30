@@ -6,19 +6,19 @@
 using namespace boost::filesystem;
 
 /*
-   Open a file for read/write. Create folders in filepath if do not exist. Returns true if opened successfully. false otherwise.
+   Open a file for read/write. Create folders in fileName if do not exist. Returns true if opened successfully. false otherwise.
  */
-bool FileUtils::fileRequestOpen(const string& filePathStr, fstream& fs, bool write)
+bool FileUtils::fileRequestOpen(const string& fileNameStr, fstream& fs, bool write)
 {
 	try
 	{
-		if (filePathStr.empty())
+		if (fileNameStr.empty())
 		{
 			return false;
 		}
 		
 		const auto flags = write ? (fstream::binary | fstream::out) : (fstream::binary | fstream::in);
-		fs.open(filePathStr, flags);
+		fs.open(fileNameStr, flags);
 		return fs.is_open();
 	}
 	catch (exception&)
@@ -110,18 +110,18 @@ uint32_t FileUtils::calculateFileSize(fstream& fs)
 }
 
 /*
-   Checks if file exists given a file path. Return true if file exists.
+   Checks if file exists given a file name. Return true if file exists.
  */
-bool FileUtils::doesFileExist(const string& filePath)
+bool FileUtils::doesFileExist(const string& fileName)
 {
-	if (filePath.empty())
+	if (fileName.empty())
 	{
 		return false;
 	}
 
 	try
 	{
-		const ifstream fs(filePath);
+		const ifstream fs(fileName);
 		return (!fs.fail());
 	}
 	catch (exception&)

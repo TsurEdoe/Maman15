@@ -5,6 +5,9 @@
 #include "ClientRequest.h"
 #include "ServerResponse.h"
 
+#define ENCRYPTED_SHARED_KEY_LENGTH 128
+#define USER_NAME_SIZE 255
+
 /*
     Handles all encryption needs for client operations:
     1. Handles key exchanging with server
@@ -22,5 +25,7 @@ private:
 public:
     EncryptionHandler(RSAWrapper* rsaWrapper, ClientSocketHandler* clientSocketHandler);
     bool initializeHandler(uint8_t* clientUUID, string userName);
-    bool sendEncryptedFileData(uint8_t* plainDataToSend, uint32_t sizeOfDataToSend, uint8_t* clientUUID, ClientRequest::RequestCode requestCode);
+    string encryptedFileData(uint8_t* dataToEncrypt, uint32_t dataToEncryptLengthe);
+    
+    static void padStringWithZeroes(string& strToPad, uint32_t wantedSize);
 };

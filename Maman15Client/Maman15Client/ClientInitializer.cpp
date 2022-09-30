@@ -9,7 +9,7 @@ ClientInitializer::ClientInitializer()
 	this->_clientSocketHandler = NULL;
 	this->_registrationHandler = NULL;
 	this->_userName = "";
-	this->_fileFullPath = "";
+	this->_fileName = "";
 }
 
 /*
@@ -62,9 +62,9 @@ string ClientInitializer::getUserName()
 /*
 	Getter
 */
-string ClientInitializer::getFileFullPath()
+string ClientInitializer::getFileName()
 {
-	return this->_fileFullPath;
+	return this->_fileName;
 }
 
 /*
@@ -105,14 +105,15 @@ bool ClientInitializer::initializeClient()
 		// Parses client information
 		string clientConnectionInfo[3];
 		clientConnectionInfo[0] = this->_userName;
-		clientConnectionInfo[1] = (char*)this->_clientUUID;
+		std::vector<uint8_t> uuidVector(std::begin(_clientUUID), std::end(_clientUUID));
+		clientConnectionInfo[1] = Base64Wrapper::hex(uuidVector);
 		clientConnectionInfo[2] = Base64Wrapper::encode(this->_rsaWrapper->getPrivateKey());
 		
 		string clientConnectionInfoBuffer = boost::algorithm::join(clientConnectionInfo, "\n");
 		
 		// Writing client information into me.info file
 		fstream fs;
-		if (!FileUtils::fileRequestOpen(CLIENT_CONNECTION_INFO_FILE, fs, true))
+		/*if (!FileUtils::fileRequestOpen(CLIENT_CONNECTION_INFO_FILE, fs, true))
 		{
 			cout << "ERROR: Connecting to server, file " << CLIENT_CONNECTION_INFO_FILE << " failed to open." << endl;
 			return false;
@@ -123,7 +124,7 @@ bool ClientInitializer::initializeClient()
 			cout << "ERROR: Connecting to server, file " << CLIENT_CONNECTION_INFO_FILE << " failed to be read." << endl;
 			FileUtils::closeFile(fs);
 			return false;
-		}
+		}*/
 		
 		cout << "Wrote client connection information successfully." << endl;
 		FileUtils::closeFile(fs);
@@ -134,28 +135,40 @@ bool ClientInitializer::initializeClient()
 /*
 	Reads lines from a given file and returns the information as a vector of strings
 */
-vector<string> ClientInitializer::readInformationFile(string fileFullPath)
+vector<string> ClientInitializer::readInformationFile(string fileName)
 {
-	uint8_t fileInfoBuffer[FILE_BUFFER_SIZE];
 	vector<string> fileInformation;
+	uint8_t* fileInfoBuffer = NULL;
 
 	fstream fs;
-	if (!FileUtils::fileRequestOpen(fileFullPath, fs))
+	if (!FileUtils::fileRequestOpen(fileName, fs))
 	{
-		cout << "ERROR: Connecting to server, file " << fileFullPath << " failed to open." << endl;
+		cout << "ERROR: Connecting to server, file " << fileName << " failed to open." << endl;
 		return fileInformation;
 	}
 
-	if (!FileUtils::readFromFile(fs, fileInfoBuffer, FILE_BUFFER_SIZE))
+	uint32_t informationFileSize = FileUtils::calculateFileSize(fs);
+	if (informationFileSize == 0)
 	{
-		cout << "ERROR: Connecting to server, file " << fileFullPath << " failed to be read." << endl;
+		cout << "ERROR: Connecting to server, failed calculating file size on " << fileName << endl;
+		return fileInformation;
+	}
+
+	fileInfoBuffer = new uint8_t[informationFileSize];
+
+	if (!FileUtils::readFromFile(fs, fileInfoBuffer, informationFileSize))
+	{
+		cout << "ERROR: Connecting to server, file " << fileName << " failed to be read." << endl;
 		FileUtils::closeFile(fs);
+		delete[] fileInfoBuffer;
 		return fileInformation;
 	}
 
 	FileUtils::closeFile(fs);
 
-	boost::split(fileInformation, fileInfoBuffer, boost::is_any_of("\n"));
+	std::string fileInfoBufferString((const char *)fileInfoBuffer);
+
+	boost::split(fileInformation, fileInfoBufferString, boost::is_any_of("\n"));
 	
 	string lastLine = fileInformation[fileInformation.size() - 1];
 	// Remove last empty line
@@ -164,6 +177,7 @@ vector<string> ClientInitializer::readInformationFile(string fileFullPath)
 		fileInformation.pop_back();
 	}
 
+	delete[] fileInfoBuffer;
 	return fileInformation;
 }
 
@@ -186,17 +200,19 @@ bool ClientInitializer::getClientConnectionInfo()
 		return false;
 	}
 
-	if (clientConnectionInfo[1].size() > UUID_LENGTH)
+	vector<uint8_t> clientUUID = Base64Wrapper::unhex(clientConnectionInfo[1]);
+	
+	if (clientUUID.size() > UUID_LENGTH)
 	{
 		cout << "UUID in " << CLIENT_CONNECTION_INFO_FILE << " file is too long" << endl;
 		return false;
 	}
-	
-	memcpy_s(this->_clientUUID, UUID_LENGTH, clientConnectionInfo[1].c_str(), clientConnectionInfo.size());
+
+	std::copy(clientUUID.begin(), clientUUID.end(), this->_clientUUID);
 
 	this->_rsaWrapper = new RSAWrapper(Base64Wrapper::decode(clientConnectionInfo[2]));
 
-	cout << "SUCCESS: Transfer information read successfully!" << endl;
+	cout << "SUCCESS: Client connection information read successfully!" << endl;
 
 	return true;
 }
@@ -210,7 +226,7 @@ bool ClientInitializer::getTransferInformation()
 
 	if (transferInformation.size() != 3)
 	{
-		cout << "ERROR: ClientInitializer - Connecting to server, transfer information not is in wrong pattern" << endl;
+		cout << "ERROR: ClientInitializer - Connecting to server, transfer information not is in wrong pattern." << endl;
 		return false;
 	}
 
@@ -235,8 +251,16 @@ bool ClientInitializer::getTransferInformation()
 		return false;
 	}
 
-	// Server information is IP:PORT
-	this->_clientSocketHandler = new ClientSocketHandler(serverInformation[0], port);
+	try
+	{
+		// Server information is IP:PORT
+		this->_clientSocketHandler = new ClientSocketHandler(serverInformation[0], port);
+	}
+	catch (exception e)
+	{
+		cout << "ERROR: ClientSocketHandler - Failed connection to server: " << e.what() << endl;
+		return false;
+	}
 
 	if (!this->_clientSocketHandler->isConnected())
 	{
@@ -245,7 +269,7 @@ bool ClientInitializer::getTransferInformation()
 	}
 
 	this->_userName = transferInformation[1];
-	this->_fileFullPath = transferInformation[2];
+	this->_fileName = transferInformation[2];
 
 	cout << "SUCCESS: ClientInitializer - Transfer information read successfully!" << endl;
 	return true;

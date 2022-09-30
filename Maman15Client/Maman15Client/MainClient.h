@@ -6,8 +6,6 @@
 #include "MainClient.h"
 
 #define MAX_RETRIES_FILE_RESEND 3
-#define FILE_CONTENT_FEILD_SIZE 4
-#define FILE_NAME_SIZE 255
 
 /*
     Main client class to run the client operation
@@ -21,12 +19,12 @@ private:
     string _userName;
     EncryptionHandler* _encryptionHandler;
     FileHandler* _fileHandler;
-    bool sendFileToServer(string fileFullPath);
+    bool sendFileToServer(string fileName);
     uint32_t getServerCalculatedCRC();
     bool handleCRCValidation(uint32_t serverCalculatedCRC, uint32_t clientCalculatedCRC);
 
 public:
     MainClient(ClientSocketHandler* clientSocketHandler, RSAWrapper* rsaWrapper, uint8_t* clientUUID, string userName);
     ~MainClient();
-    bool runClient(string fileFullPath);
+    bool runClient(string fileName);
 };

@@ -20,12 +20,19 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    MainClient mainClient(clientSocketHandler, rsaWrapper, clientUUID, userName);
-
-    if (!mainClient.runClient(clientInitializer.getFileFullPath()))
+    try
     {
+        MainClient mainClient(clientSocketHandler, rsaWrapper, clientUUID, userName);
+
+        if (!mainClient.runClient(clientInitializer.getFileName()))
+        {
+            return -1;
+        }
+    }
+    catch (exception e)
+    {
+        cout << "ERROR: Failed running client: " << e.what() << endl;
         return -1;
     }
-
     return 0;
 }

@@ -41,6 +41,14 @@ uint32_t ClientRequest::sizeWithoutPayload() const
 }
 
 /*
+	Calcs the total size of the current request
+*/
+uint32_t ClientRequest::sizeWithPayload() const
+{
+	return sizeWithoutPayload() + _payload.size;
+}
+
+/*
 	Serializes the response into a given buffer in order to send to the client
 */
 void ClientRequest::serializeIntoBuffer(uint8_t* buffer)

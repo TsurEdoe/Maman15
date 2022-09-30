@@ -32,5 +32,6 @@ struct ClientRequest
 	ClientRequest(uint8_t* clientId, uint16_t code, size_t payloadSize, uint8_t* payload);
 	~ClientRequest();
 	uint32_t sizeWithoutPayload() const;
+	uint32_t sizeWithPayload() const;
 	void serializeIntoBuffer(uint8_t* buffer);
 };

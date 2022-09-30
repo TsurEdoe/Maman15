@@ -8,13 +8,18 @@ MainClient::MainClient(ClientSocketHandler* clientSocketHandler, RSAWrapper* rsa
 {
     _encryptionHandler = new EncryptionHandler(rsaWrapper, clientSocketHandler);
 
+    if (!_encryptionHandler)
+    {
+        cout << "Error: Failed creating MainClient, Failed creating encryptoin handler" << endl;
+    }
+
     if (!_encryptionHandler->initializeHandler(clientUUID, userName))
     {
         delete _encryptionHandler;
-        return;
+        throw std::runtime_error("Error: Failed initizing encryption handler");
     }
 
-    _fileHandler = new FileHandler(_encryptionHandler);
+    _fileHandler = new FileHandler(_encryptionHandler, clientSocketHandler);
 }
 
 /*
@@ -36,17 +41,19 @@ MainClient::~MainClient()
     Sends a file to the server.
     Returns true if CRC response from server is correct, false otherwise.
 */
-bool MainClient::sendFileToServer(string fileFullPath)
+bool MainClient::sendFileToServer(string fileName)
 {
     uint8_t buffer[PACKET_SIZE];
     memset(buffer, 0, PACKET_SIZE);
 
-    if (!_fileHandler->sendEncryptedFile(fileFullPath, _clientUUID))
+    if (!_fileHandler->sendEncryptedFile(fileName, _clientUUID))
     {
         return false;
     }
 
-    if (handleCRCValidation(getServerCalculatedCRC(), _fileHandler->calculateFileCRC(fileFullPath)))
+    cout << "MainClient: Started file CRC validation on " << fileName << endl;
+
+    if (handleCRCValidation(getServerCalculatedCRC(), _fileHandler->calculateFileCRC(fileName)))
     {
         return true;
     }
@@ -55,10 +62,10 @@ bool MainClient::sendFileToServer(string fileFullPath)
     ClientRequest crcClientResponseToServer(_clientUUID, ClientRequest::RequestCode::FILE_CRC_FAILED_RESENDING, 0, NULL);
     crcClientResponseToServer.serializeIntoBuffer(buffer);
 
-    _clientSocketHandler->send(buffer);
+    _clientSocketHandler->send(buffer, crcClientResponseToServer.sizeWithPayload());
 
     memset(buffer, 0, PACKET_SIZE);
-    _clientSocketHandler->receive(buffer);
+    _clientSocketHandler->receive(buffer, sizeof(ServerResponse::ServerResponseHeader));
 
     ServerResponse crcFailedResponse(buffer, sizeof(ServerResponse::ServerResponseHeader));
     if (crcFailedResponse.header._code == ServerResponse::ResponseType::REQUEST_RECEIVED)
@@ -78,14 +85,20 @@ uint32_t MainClient::getServerCalculatedCRC()
     uint8_t buffer[PACKET_SIZE];
     memset(buffer, 0, PACKET_SIZE);
 
-    _clientSocketHandler->receive(buffer);
-    ServerResponse crcResponse(buffer, sizeof(ServerResponse::ServerResponseHeader) + FILE_CONTENT_FEILD_SIZE + FILE_NAME_SIZE + CHECKSUM_SIZE);
+    cout << "MainClient: Receiving file CRC" << endl;
+
+    _clientSocketHandler->receive(buffer, sizeof(ServerResponse::ServerResponseHeader) + sizeof(uint32_t) + UUID_LENGTH + FILE_CONTENT_FIELD_SIZE + FILE_NAME_FIELD_SIZE + CHECKSUM_FIELD_SIZE);
+    ServerResponse crcResponse(buffer, sizeof(ServerResponse::ServerResponseHeader) + sizeof(uint32_t) + UUID_LENGTH + FILE_CONTENT_FIELD_SIZE + FILE_NAME_FIELD_SIZE + CHECKSUM_FIELD_SIZE);
     if (crcResponse.header._code != ServerResponse::ResponseType::LAST_SENT_FILE_CRC)
     {
         return 0;
     }
+    
+    uint32_t fileServerCRC;
 
-    return *(crcResponse.payload.payload + FILE_CONTENT_FEILD_SIZE + FILE_NAME_SIZE);
+    memcpy(&fileServerCRC, crcResponse.payload.payload + UUID_LENGTH + FILE_CONTENT_FIELD_SIZE + FILE_NAME_FIELD_SIZE, CHECKSUM_FIELD_SIZE);
+
+    return fileServerCRC;
 }
 
 /*
@@ -102,10 +115,10 @@ bool MainClient::handleCRCValidation(uint32_t serverCalculatedCRC, uint32_t clie
     {
         ClientRequest crcClientResponseToServer(_clientUUID, ClientRequest::RequestCode::FILE_CRC_SUCCESS, 0, NULL);
         crcClientResponseToServer.serializeIntoBuffer(buffer);
-        _clientSocketHandler->send(buffer);
+        _clientSocketHandler->send(buffer, crcClientResponseToServer.sizeWithPayload());
 
         memset(buffer, 0, PACKET_SIZE);
-        _clientSocketHandler->receive(buffer);
+        _clientSocketHandler->receive(buffer, sizeof(ServerResponse::ServerResponseHeader));
 
         ServerResponse crcResponse(buffer, sizeof(ServerResponse::ServerResponseHeader));
         if (crcResponse.header._code == ServerResponse::ResponseType::REQUEST_RECEIVED)
@@ -125,30 +138,28 @@ bool MainClient::handleCRCValidation(uint32_t serverCalculatedCRC, uint32_t clie
     Main client runner, encapsulated all od the file sendings and CRC validations needed.
     Return true if the file was uploaded successsfully, false otherwise.
 */
-bool MainClient::runClient(string fileFullPath)
+bool MainClient::runClient(string fileName)
 {
     uint8_t buffer[PACKET_SIZE];
 
     for (size_t i = 0; i < MAX_RETRIES_FILE_RESEND; i++)
     {
-        if (!sendFileToServer(fileFullPath))
+        if (sendFileToServer(fileName))
         {
-            cout << "Resending file due to bad CRC calculation" << endl;
+            return true;
         }
-        else
-        {
-            break;
-        }
+
+        cout << "Resending file due to bad CRC calculation" << endl;
     }
 
     // CRC Incorrect, resending
     ClientRequest crcClientResponseToServer(_clientUUID, ClientRequest::RequestCode::FILE_CRC_FAILED_FINISHED, 0, NULL);
     crcClientResponseToServer.serializeIntoBuffer(buffer);
 
-    _clientSocketHandler->send(buffer);
+    _clientSocketHandler->send(buffer, crcClientResponseToServer.sizeWithPayload());
 
     memset(buffer, 0, PACKET_SIZE);
-    _clientSocketHandler->receive(buffer);
+    _clientSocketHandler->receive(buffer, sizeof(ServerResponse::ServerResponseHeader));
 
     ServerResponse crcFinalFailedResponse(buffer, sizeof(ServerResponse::ServerResponseHeader));
     if (crcFinalFailedResponse.header._code != ServerResponse::ResponseType::REQUEST_RECEIVED)

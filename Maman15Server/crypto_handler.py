@@ -1,35 +1,28 @@
-from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
-import base64
+from Crypto.Cipher import AES, PKCS1_OAEP
+from Crypto.PublicKey import RSA
+from Crypto.Util.Padding import pad, unpad
 
-pad = lambda s: s + (AES.block_size - len(s) % AES.block_size) * chr(AES.block_size - len(s) % AES.block_size)
-unpad = lambda s: s[:-ord(s[len(s) - 1:])]
+AES_KEY_LENGTH = 16
 
 class CryptoHandler:
-    __instance = None
-    @staticmethod 
-    def getInstance():
-        """ Static access method. """
-        if CryptoHandler.__instance == None:
-            CryptoHandler()
-        return CryptoHandler.__instance
-    
-    def __init__(self):
-        """ Virtually private constructor. """
-        if CryptoHandler.__instance != None:
-            raise Exception("This class is a singleton!")
-        else:
-            CryptoHandler.__instance = self
-    
-    def get_aes_key(self):
-        return get_random_bytes(32)
+    @staticmethod
+    def get_aes_key():
+        return get_random_bytes(AES_KEY_LENGTH)
 
-    def encrypt_data(self, plain_data, encryption_key):
+    @staticmethod
+    def encrypt_data_asymmetric(plain_data, encryption_key):
+        imported_encryption_key = RSA.importKey(encryption_key)
+        cipher_rsa = PKCS1_OAEP.new(imported_encryption_key)
+        return cipher_rsa.encrypt(plain_data)
+
+    @staticmethod
+    def encrypt_data_symmetric(plain_data, encryption_key):
         plain_data = pad(plain_data)
-        cipher = AES.new(encryption_key, AES.MODE_CBC, 0)
-        return base64.b64encode(cipher.encrypt(plain_data))
-        
-    def decrypt_data(self, cipher_data, decryption_key):
-        cipher_data = base64.b64decode(cipher_data)
-        cipher = AES.new(decryption_key, AES.MODE_CBC, 0)
-        return unpad(cipher.decrypt(cipher_data[16:]))
+        cipher_aes = AES.new(encryption_key, AES.MODE_CBC, bytes(16))
+        return cipher_aes.encrypt(plain_data)
+
+    @staticmethod
+    def decrypt_data_symmetric(cipher_data, decryption_key):
+        cipher_aes = AES.new(decryption_key, AES.MODE_CBC, bytes(16))
+        return unpad(cipher_aes.decrypt(cipher_data), AES.block_size)

@@ -8,7 +8,7 @@
 */
 struct CommonPayload
 {
-	size_t size;
+	uint32_t size;
 	uint8_t* payload; 
 	CommonPayload();
 	~CommonPayload();

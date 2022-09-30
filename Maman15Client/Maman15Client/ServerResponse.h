@@ -10,9 +10,8 @@ struct ServerResponse
 	struct ServerResponseHeader
 	{
 		uint8_t _version;
-		uint8_t _code;
-		uint8_t _clientId[UUID_LENGTH];
-		ServerResponseHeader() : _version(0), _code(0), _clientId{ } {}
+		uint16_t _code;
+		ServerResponseHeader() : _version(0), _code(0) {}
 	};
 #pragma pack(pop)
 
