@@ -39,7 +39,7 @@ bool ClientSocketHandler::receive(uint8_t(&buffer)[PACKET_SIZE], size_t bytesToR
 	}
 	catch(boost::system::system_error& e)
 	{
-		cout << "ERROR: ClientSocketHandler - Failed receiving data: " << e.what() << endl;
+		cout << "ClientSocketHandler - ERROR: Failed receiving data: " << e.what() << endl;
 		return false;
 	}
 }
@@ -58,7 +58,7 @@ bool ClientSocketHandler::send(const uint8_t* buffer, size_t bytesToSend)
 	}
 	catch (boost::system::system_error& e)
 	{
-		cout << "ERROR: ClientSocketHandler - Failed sending data: " << e.what() << endl;
+		cout << "ClientSocketHandler - ERROR: Failed sending data: " << e.what() << endl;
 		return false;
 	}
 }

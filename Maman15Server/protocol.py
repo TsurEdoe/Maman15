@@ -21,6 +21,7 @@ class ResponseType(Enum):
     """All the different server response types defined by the protocol"""
     DEFAULT_RESPONSE_TYPE = 0
     REGISTRATION_SUCCESS = 2100
+    REGISTRATION_FAILED = 2101
     CLIENT_AES_KEY = 2102
     LAST_SENT_FILE_CRC = 2103
     REQUEST_RECEIVED = 2104

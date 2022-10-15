@@ -23,7 +23,7 @@ bool FileHandler::sendEncryptedFile(string fileName, uint8_t* clientUUID)
 	uint8_t* dataFromFile = readDataFromFile(fileName);
 	if (dataFromFile == NULL)
 	{
-		cout << "Failed sending encrypted file " << fileName << " to server: Failed reading file content" << endl;
+		cout << "FileHandler - Failed sending encrypted file " << fileName << " to server: Failed reading file content" << endl;
 		return false;
 	}
 
@@ -35,7 +35,7 @@ bool FileHandler::sendEncryptedFile(string fileName, uint8_t* clientUUID)
 	
 	if (encryptedFileData.empty())
 	{
-		cout << "Failed sending encrypted file " << fileName << " to server: Failed encrypting file" << endl;
+		cout << "FileHandler - Failed sending encrypted file " << fileName << " to server: Failed encrypting file" << endl;
 		return false;
 	}
 
@@ -59,7 +59,7 @@ bool FileHandler::sendEncryptedFile(string fileName, uint8_t* clientUUID)
 
 	bool sendResult = _clientSocketHandler->send(buffer, sendEncryptedDataToServer.sizeWithPayload());
 
-	cout << (sendResult ? "Successully sent encrypted file " : "Failed sending encrypted file ") << fileName << " to server" << endl;
+	cout << "FileHandler - " << (sendResult ? "Successully sent encrypted file " : "ERROR: Failed sending encrypted file ") << fileName << " to server" << endl;
 
 	delete[] payload;
 	payload = NULL;
@@ -76,14 +76,14 @@ uint32_t FileHandler::validateFileToSend(string fileName)
 {
 	if (!FileUtils::doesFileExist(fileName))
 	{
-		cout << "File " << fileName << " doesn't exist." << endl;
+		cout << "FileHandler - File " << fileName << " doesn't exist." << endl;
 		return 0;
 	}
 
 	fstream fileToSend;
 	if (!FileUtils::fileRequestOpen(fileName, fileToSend))
 	{
-		cout << "Failed opening file " << fileName << endl;
+		cout << "FileHandler - ERROR: Failed opening file " << fileName << endl;
 		return 0;
 	}
 
@@ -91,7 +91,7 @@ uint32_t FileHandler::validateFileToSend(string fileName)
 
 	if (!FileUtils::closeFile(fileToSend))
 	{
-		cout << "Failed closing file " << fileName << endl;
+		cout << "FileHandler - ERROR: Failed closing file " << fileName << endl;
 		return 0;
 	}
 
@@ -105,14 +105,14 @@ uint8_t* FileHandler::readDataFromFile(string fileName)
 {
 	if (!FileUtils::doesFileExist(fileName))
 	{
-		cout << "File " << fileName << " doesn't exist." << endl;
+		cout << "FileHandler - ERROR: File " << fileName << " doesn't exist." << endl;
 		return NULL;
 	}
 
 	fstream fileToSend;
 	if (!FileUtils::fileRequestOpen(fileName, fileToSend))
 	{
-		cout << "Failed opening file " << fileName << endl;
+		cout << "FileHandler - ERROR: Failed opening file " << fileName << endl;
 		return NULL;
 	}
 
@@ -122,14 +122,14 @@ uint8_t* FileHandler::readDataFromFile(string fileName)
 
 	if (!FileUtils::readFromFile(fileToSend, dataFromFileToSend, fileSize))
 	{
-		cout << "Failed reading from file " << fileName << endl;
+		cout << "FileHandler - ERROR: Failed reading from file " << fileName << endl;
 		delete[] dataFromFileToSend;
 		return NULL;
 	}
 
 	if (!FileUtils::closeFile(fileToSend))
 	{
-		cout << "Failed closing file " << fileName << endl;
+		cout << "FileHandler - ERROR: Failed closing file " << fileName << endl;
 		delete[] dataFromFileToSend;
 		return NULL;
 	}
@@ -142,11 +142,11 @@ uint8_t* FileHandler::readDataFromFile(string fileName)
 */
 uint32_t FileHandler::calculateFileCRC(string fileName)
 {
-	cout << "FileHandler: Calculating CRC on " << fileName << endl;
+	cout << "FileHandler - Calculating CRC on " << fileName << endl;
 	size_t fileSize = validateFileToSend(fileName);
 	if (fileSize == 0)
 	{
-		cout << "Failed calculating file " << fileName << " CRC." << endl;
+		cout << "FileHandler - ERROR: Failed calculating file " << fileName << " CRC." << endl;
 		return 0;
 	}
 
@@ -158,6 +158,6 @@ uint32_t FileHandler::calculateFileCRC(string fileName)
 
 	uint32_t fileCRC = result.checksum();
 
-	cout << "FileHandler: " << fileName << " CRC is " << fileCRC << endl;
+	cout << "FileHandler- " << fileName << "'s CRC is " << fileCRC << endl;
 	return fileCRC;
 }

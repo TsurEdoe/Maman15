@@ -109,7 +109,9 @@ class ClientHandler(threading.Thread):
 
         client_id = self.__database.register_new_client(self.__client_name)
         if client_id == -1:
-            logging.error("Failed registering new client")
+            logging.error("Failed registering new client, returning REGISTRATION_FAILED message")
+            registration_failed_response = ServerResponse(bytes(16), ResponseType.REGISTRATION_FAILED)
+            self.__client_socket.send(registration_failed_response.pack())
             return False
         logging.info("Success, new client registered, returning REGISTRATION_SUCCESS message")
         self.__client_id = UUID(bytes=client_id.bytes)

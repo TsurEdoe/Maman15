@@ -21,7 +21,7 @@ private:
     FileHandler* _fileHandler;
     bool sendFileToServer(string fileName);
     uint32_t getServerCalculatedCRC();
-    bool handleCRCValidation(uint32_t serverCalculatedCRC, uint32_t clientCalculatedCRC);
+    bool handleCRCValidation(uint32_t serverCalculatedCRC, uint32_t clientCalculatedCRC, string fileName);
 
 public:
     MainClient(ClientSocketHandler* clientSocketHandler, RSAWrapper* rsaWrapper, uint8_t* clientUUID, string userName);

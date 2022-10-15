@@ -37,7 +37,7 @@ class ServerDatabase:
                 self.__cursor.execute(
                     """CREATE TABLE clients (
                     id varchar(16) primary key, 
-                    name varchar(127), 
+                    name varchar(127) unique, 
                     public_key varchar(160),
                     last_seen datetime,
                     shared_key varchar(32))
@@ -58,11 +58,8 @@ class ServerDatabase:
             except sqlite3.OperationalError as e:
                 logging.warn("Failed initializing table files: {0}".format(e))
 
-    """
-        Updated last seen 
-    """
-
     def __update_last_seen(self, client_id):
+        """ Updated last seen """
         with self.db_write_lock:
             self.__cursor.execute(
                 """UPDATE clients set 
@@ -71,12 +68,10 @@ class ServerDatabase:
                 """, [client_id])
         logging.info("Set client's last seen field (uuid={0}) ".format(client_id))
 
-    """
-        Registers a new client into the DB (clients table). Adds only the name.
-        Also updates last seen field for appropriate client
-    """
-
     def register_new_client(self, client_name):
+        """Registers a new client into the DB (clients table). Adds only the name.
+        If the name already exists, fails registration (due to unique constraint)
+        Also updates last seen field for appropriate client"""
         try:
             client_uuid = uuid.uuid4()
             with self.db_write_lock:
@@ -85,7 +80,6 @@ class ServerDatabase:
                     id, name)
                     VALUES(?, ?)
                     """, [client_uuid, client_name])
-
         except Exception as e:
             logging.error("Failed registering client {0}: {1}".format(client_name, e))
             return -1

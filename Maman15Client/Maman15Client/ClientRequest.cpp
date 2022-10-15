@@ -11,7 +11,7 @@ ClientRequest::ClientRequest(uint8_t* clientId, uint16_t code, size_t payloadSiz
 {
 	if (clientId == NULL)
 	{
-		cout << "Failed creating ClientRequest, bad parameters sent" << endl;
+		cout << "ClientRequest - Failed creating ClientRequest, bad parameters sent" << endl;
 		return;
 	}
 
@@ -54,11 +54,6 @@ uint32_t ClientRequest::sizeWithPayload() const
 void ClientRequest::serializeIntoBuffer(uint8_t* buffer)
 {
 	uint8_t* ptr = buffer;
-	size_t payloadSize = (PACKET_SIZE - sizeWithoutPayload());
-	if (_payload.size < payloadSize)
-	{
-		payloadSize = _payload.size;
-	}
 	
 	memcpy(ptr, &(_clientId), sizeof(_clientId));
 	ptr += sizeof(_clientId);
@@ -72,5 +67,5 @@ void ClientRequest::serializeIntoBuffer(uint8_t* buffer)
 	memcpy(ptr, &(_payload.size), sizeof(_payload.size));
 	ptr += sizeof(_payload.size);
 
-	memcpy(ptr, (_payload.payload), payloadSize);
+	memcpy(ptr, (_payload.payload), _payload.size);
 }

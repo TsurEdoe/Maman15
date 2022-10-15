@@ -74,7 +74,7 @@ bool ClientInitializer::initializeClient()
 {
 	if (!getTransferInformation())
 	{
-		cout << "ERROR: Failed initializing client!" << endl;
+		cout << "ClientInitializer - ERROR: Failed initializing client!" << endl;
 		return false;
 	}
 
@@ -83,24 +83,24 @@ bool ClientInitializer::initializeClient()
 	// Found me.info
 	if (FileUtils::doesFileExist(CLIENT_CONNECTION_INFO_FILE))
 	{
-		cout << "Found " << CLIENT_CONNECTION_INFO_FILE << " skipping registration." << endl;
+		cout << "ClientInitializer - Found " << CLIENT_CONNECTION_INFO_FILE << " skipping registration." << endl;
 		return getClientConnectionInfo();
 	}
 	// Registers client
 	else
 	{
-		cout << CLIENT_CONNECTION_INFO_FILE << " not found, going to registration." << endl;
+		cout << "ClientInitializer - "<< CLIENT_CONNECTION_INFO_FILE << " not found, going to registration." << endl;
 		bool registrationResult = _registrationHandler->registerClient(this->_userName, _clientUUID);
 
 		if (!registrationResult || this->_clientUUID == NULL)
 		{
-			cout << "Error initializng client, failed registering with server" << endl;
+			cout << "ClientInitializer - ERROR: Error initializng client, failed registering with server" << endl;
 			return false;
 		}
 
 		this->_rsaWrapper = new RSAWrapper();
 		
-		cout << "Client " << this->_userName << " registered, writing client connection information to " << CLIENT_CONNECTION_INFO_FILE << " file." << endl;
+		cout << "ClientInitializer - Client " << this->_userName << " registered, writing client connection information to " << CLIENT_CONNECTION_INFO_FILE << " file." << endl;
 		
 		// Parses client information
 		string clientConnectionInfo[3];
@@ -115,18 +115,18 @@ bool ClientInitializer::initializeClient()
 		fstream fs;
 		if (!FileUtils::fileRequestOpen(CLIENT_CONNECTION_INFO_FILE, fs, true))
 		{
-			cout << "ERROR: Connecting to server, file " << CLIENT_CONNECTION_INFO_FILE << " failed to open." << endl;
+			cout << "ClientInitializer - ERROR: Connecting to server, file " << CLIENT_CONNECTION_INFO_FILE << " failed to open." << endl;
 			return false;
 		}
 
 		if (!FileUtils::writeToFile(fs, (uint8_t*)clientConnectionInfoBuffer.c_str(), clientConnectionInfoBuffer.size()))
 		{
-			cout << "ERROR: Connecting to server, file " << CLIENT_CONNECTION_INFO_FILE << " failed to be read." << endl;
+			cout << "ClientInitializer - ERROR: Connecting to server, file " << CLIENT_CONNECTION_INFO_FILE << " failed to be read." << endl;
 			FileUtils::closeFile(fs);
 			return false;
 		}
 		
-		cout << "Wrote client connection information successfully." << endl;
+		cout << "ClientInitializer - Wrote client connection information successfully." << endl;
 		FileUtils::closeFile(fs);
 		return true;
 	}
@@ -143,14 +143,14 @@ vector<string> ClientInitializer::readInformationFile(string fileName)
 	fstream fs;
 	if (!FileUtils::fileRequestOpen(fileName, fs))
 	{
-		cout << "ERROR: Connecting to server, file " << fileName << " failed to open." << endl;
+		cout << "ClientInitializer - ERROR: Connecting to server, file " << fileName << " failed to open." << endl;
 		return fileInformation;
 	}
 
 	uint32_t informationFileSize = FileUtils::calculateFileSize(fs);
 	if (informationFileSize == 0)
 	{
-		cout << "ERROR: Connecting to server, failed calculating file size on " << fileName << endl;
+		cout << "ClientInitializer - ERROR: Connecting to server, failed calculating file size on " << fileName << endl;
 		return fileInformation;
 	}
 
@@ -158,7 +158,7 @@ vector<string> ClientInitializer::readInformationFile(string fileName)
 
 	if (!FileUtils::readFromFile(fs, fileInfoBuffer, informationFileSize))
 	{
-		cout << "ERROR: Connecting to server, file " << fileName << " failed to be read." << endl;
+		cout << "ClientInitializer - ERROR: Connecting to server, file " << fileName << " failed to be read." << endl;
 		FileUtils::closeFile(fs);
 		delete[] fileInfoBuffer;
 		return fileInformation;
@@ -190,13 +190,13 @@ bool ClientInitializer::getClientConnectionInfo()
 
 	if (clientConnectionInfo.size() != 3)
 	{
-		cout << "ERROR: Connecting to server, client connection information not is in wrong pattern" << endl;
+		cout << "ClientInitializer - ERROR: Connecting to server, client connection information not is in wrong pattern" << endl;
 		return false;
 	}
 
 	if (this->_userName != clientConnectionInfo[0])
 	{
-		cout << "User name in " << TRANSFER_INFO_FILE << " file and " << CLIENT_CONNECTION_INFO_FILE << " file don't match" << endl;
+		cout << "ClientInitializer - User name in " << TRANSFER_INFO_FILE << " file and " << CLIENT_CONNECTION_INFO_FILE << " file don't match" << endl;
 		return false;
 	}
 
@@ -204,7 +204,7 @@ bool ClientInitializer::getClientConnectionInfo()
 	
 	if (clientUUID.size() > UUID_LENGTH)
 	{
-		cout << "UUID in " << CLIENT_CONNECTION_INFO_FILE << " file is too long" << endl;
+		cout << "ClientInitializer - UUID in " << CLIENT_CONNECTION_INFO_FILE << " file is too long" << endl;
 		return false;
 	}
 
@@ -212,7 +212,7 @@ bool ClientInitializer::getClientConnectionInfo()
 
 	this->_rsaWrapper = new RSAWrapper(Base64Wrapper::decode(clientConnectionInfo[2]));
 
-	cout << "SUCCESS: Client connection information read successfully!" << endl;
+	cout << "ClientInitializer - Client connection information read successfully!" << endl;
 
 	return true;
 }
@@ -226,7 +226,7 @@ bool ClientInitializer::getTransferInformation()
 
 	if (transferInformation.size() != 3)
 	{
-		cout << "ERROR: ClientInitializer - Connecting to server, transfer information not is in wrong pattern." << endl;
+		cout << "ClientInitializer - ERROR: Connecting to server, transfer information not is in wrong pattern." << endl;
 		return false;
 	}
 
@@ -235,7 +235,7 @@ bool ClientInitializer::getTransferInformation()
 
 	if (serverInformation.size() != 2)
 	{
-		cout << "ERROR: ClientInitializer - Connecting to server, server connection information is in wrong pattern" << endl;
+		cout << "ClientInitializer - ERROR: Connecting to server, server connection information is in wrong pattern" << endl;
 		return false;
 	}
 
@@ -247,7 +247,7 @@ bool ClientInitializer::getTransferInformation()
 	}
 	catch(exception e)
 	{
-		cout << "ERROR: ClientInitializer - Connecting to server, given port is not a number" << e.what() << endl;
+		cout << "ClientInitializer - ERROR: Connecting to server, given port is not a number" << e.what() << endl;
 		return false;
 	}
 
@@ -258,19 +258,19 @@ bool ClientInitializer::getTransferInformation()
 	}
 	catch (exception e)
 	{
-		cout << "ERROR: ClientSocketHandler - Failed connection to server: " << e.what() << endl;
+		cout << "ClientInitializer - ERROR: Failed connection to server: " << e.what() << endl;
 		return false;
 	}
 
 	if (!this->_clientSocketHandler->isConnected())
 	{
-		cout << "ERROR: ClientInitializer - Connecting to server, socket wasn't opened" << endl;
+		cout << "ClientInitializer - ERROR: Connecting to server, socket wasn't opened" << endl;
 		return false;
 	}
 
 	this->_userName = transferInformation[1];
 	this->_fileName = transferInformation[2];
 
-	cout << "SUCCESS: ClientInitializer - Transfer information read successfully!" << endl;
+	cout << "ClientInitializer - Transfer information read successfully!" << endl;
 	return true;
 }

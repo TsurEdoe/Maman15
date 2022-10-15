@@ -10,6 +10,7 @@ using namespace boost::asio;
 using ip::tcp;
 
 #define PACKET_SIZE 1024
+#define MAX_NUMBER_OF_SEND_TRIES 3
 
 /*
 	Handles socker IO operations.

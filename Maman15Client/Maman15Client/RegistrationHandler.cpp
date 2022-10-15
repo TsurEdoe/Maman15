@@ -40,8 +40,14 @@ bool RegistrationHandler::registerClient(string clientUserName, uint8_t* clientU
         
         return true;
     }
-
-    cout << "ERROR: RegistrationHandler - Failed registraion with server: Got bad response type (" << registrationRespone.header._code << ")" << endl;
-
+    else if (registrationRespone.header._code == ServerResponse::REGISTRATION_FAILED)
+    {
+        cout << "ERROR: Failed registering with server, got failed registration response" << endl;
+    }
+    else
+    {    
+        cout << "ERROR: RegistrationHandler - Failed registraion with server: Got bad response type (" << registrationRespone.header._code << ")" << endl;
+    }
+    
     return false;
 }

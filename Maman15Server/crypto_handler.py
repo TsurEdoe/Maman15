@@ -24,7 +24,7 @@ class CryptoHandler:
     @staticmethod
     def encrypt_data_symmetric(plain_data, encryption_key):
         """Encrypts given data using AES and the given shared key"""
-        plain_data = pad(plain_data)
+        plain_data = pad(plain_data, AES.block_size)
         cipher_aes = AES.new(encryption_key, AES.MODE_CBC, bytes(16))
         return cipher_aes.encrypt(plain_data)
 
@@ -32,4 +32,5 @@ class CryptoHandler:
     def decrypt_data_symmetric(cipher_data, decryption_key):
         """Decrypts given data using AES and the given shared key"""
         cipher_aes = AES.new(decryption_key, AES.MODE_CBC, bytes(16))
-        return unpad(cipher_aes.decrypt(cipher_data), AES.block_size)
+        plain_data = cipher_aes.decrypt(cipher_data)
+        return unpad(plain_data, AES.block_size)

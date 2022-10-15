@@ -36,7 +36,7 @@ const unsigned char* AESWrapper::getKey() const
 */
 std::string AESWrapper::encrypt(const char* plain, unsigned int length)
 {
-	CryptoPP::byte iv[CryptoPP::AES::BLOCKSIZE] = { 0 };	// for practical use iv should never be a fixed value!
+	CryptoPP::byte iv[CryptoPP::AES::BLOCKSIZE] = { 0 };
 
 	CryptoPP::AES::Encryption aesEncryption(_key, DEFAULT_KEYLENGTH);
 	CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEncryption(aesEncryption, iv);
@@ -54,7 +54,7 @@ std::string AESWrapper::encrypt(const char* plain, unsigned int length)
 */
 std::string AESWrapper::decrypt(const char* cipher, unsigned int length)
 {
-	CryptoPP::byte iv[CryptoPP::AES::BLOCKSIZE] = { 0 };	// for practical use iv should never be a fixed value!
+	CryptoPP::byte iv[CryptoPP::AES::BLOCKSIZE] = { 0 };
 
 	CryptoPP::AES::Decryption aesDecryption(_key, DEFAULT_KEYLENGTH);
 	CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption(aesDecryption, iv);

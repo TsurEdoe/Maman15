@@ -38,7 +38,7 @@ bool EncryptionHandler::receiveSharedSecret()
 
     if (!_clientSocketHandler->receive(buffer, sizeof(ServerResponse::ServerResponseHeader) + sizeof(uint32_t) + UUID_LENGTH + ENCRYPTED_SHARED_KEY_LENGTH))
     {
-        cout << "ERROR: EncryptionHandler - Failed to receive shared key from server!" << endl;
+        cout << "EncryptionHandler - ERROR: Failed to receive shared key from server!" << endl;
         return NULL;
     }
 
@@ -56,7 +56,7 @@ bool EncryptionHandler::receiveSharedSecret()
         }
         catch (exception e)
         {
-            cout << "ERROR - EncryptionHandler: Failed decrypting received shared key " << e.what() << endl;
+            cout << "EncryptionHandler - ERROR: Failed decrypting received shared key " << e.what() << endl;
             return false;
         }
         cout << "EncryptionHandler - Initialized encryption handler successfully" << endl;
@@ -64,7 +64,7 @@ bool EncryptionHandler::receiveSharedSecret()
         return true;
     }
 
-    cout << "ERROR: EncryptionHandler - Failed initizlizing encryption handler, bad response " << sharedKeyResponse.header._code << " type received from server" << endl;
+    cout << "EncryptionHandler - ERROR: Failed initizlizing encryption handler, bad response " << sharedKeyResponse.header._code << " type received from server" << endl;
 
     return false;
 }
